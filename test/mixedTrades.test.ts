@@ -5,14 +5,14 @@ import { utils, Wallet } from 'ethers'
 import { LooksRareV2Data, LooksRareV2Trade } from '../src/entities/protocols/looksRareV2'
 import { looksRareV2Orders } from './orders/looksRareV2'
 import { seaportV1_4DataETHRecent } from './orders/seaportV1_4'
-import { Trade as V2Trade, Route as RouteV2, Pair } from '@uniswap/v2-sdk'
-import { Trade as V3Trade, Route as RouteV3, Pool } from '@uniswap/v3-sdk'
+import { Trade as V1Trade, Route as RouteV1, Pair } from '@pollum-io/v1-sdk'
+import { Trade as V2Trade, Route as RouteV2, Pool } from '@pollum-io/v2-sdk'
 import { generatePermitSignature, makePermit } from './utils/permit2'
 
 import { UniswapTrade } from '../src'
-import { CurrencyAmount, TradeType } from '@uniswap/sdk-core'
+import { CurrencyAmount, TradeType } from '@pollum-io/sdk-core'
 import { registerFixture } from './forge/writeInterop'
-import { buildTrade, getUniswapPools, swapOptions, DAI, ETHER, WETH, USDC } from './utils/uniswapData'
+import { buildTrade, getUniswapPools, swapOptions, DAI, ETHER, WETH, USDC } from './utils/pegasysData'
 import {
   FORGE_PERMIT2_ADDRESS,
   FORGE_ROUTER_ADDRESS,
@@ -52,16 +52,16 @@ describe('SwapRouter.swapCallParameters', () => {
 
     it('erc20 -> 1 looksrare nft', async () => {
       const erc20Trade = buildTrade([
-        await V3Trade.fromRoute(
-          new RouteV3([WETH_USDC_V3], USDC, ETHER),
+        await V2Trade.fromRoute(
+          new RouteV2([WETH_USDC_V3], USDC, ETHER),
           CurrencyAmount.fromRawAmount(ETHER, looksRareV2Value.toString()),
           TradeType.EXACT_OUTPUT
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const uniswapTrade = new UniswapTrade(erc20Trade, opts)
+      const pegasysTrade = new UniswapTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([uniswapTrade, looksRareV2Trade], {
+      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, looksRareV2Trade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_FOR_1_LOOKSRARE_NFT', methodParameters)
@@ -98,16 +98,16 @@ describe('SwapRouter.swapCallParameters', () => {
       const halfOrderPriceWETH = CurrencyAmount.fromRawAmount(WETH, looksRareV2Trade.getTotalPrice().div(2).toString())
       const halfLooksRarePriceUSDC = (await WETH_USDC_V3.getInputAmount(halfOrderPriceWETH))[0]
       const erc20Trade = buildTrade([
-        await V3Trade.fromRoute(
-          new RouteV3([WETH_USDC_V3], USDC, ETHER),
+        await V2Trade.fromRoute(
+          new RouteV2([WETH_USDC_V3], USDC, ETHER),
           halfLooksRarePriceUSDC, // do not send enough USDC to cover entire cost
           TradeType.EXACT_INPUT
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const uniswapTrade = new UniswapTrade(erc20Trade, opts)
+      const pegasysTrade = new UniswapTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([uniswapTrade, looksRareV2Trade], {
+      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, looksRareV2Trade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_AND_ETH_FOR_1_LOOKSRARE_NFT', methodParameters)
@@ -118,16 +118,16 @@ describe('SwapRouter.swapCallParameters', () => {
       const totalValue = looksRareV2Value.add(seaportValue).toString()
 
       const erc20Trade = buildTrade([
-        await V3Trade.fromRoute(
-          new RouteV3([WETH_USDC_V3], USDC, ETHER),
+        await V2Trade.fromRoute(
+          new RouteV2([WETH_USDC_V3], USDC, ETHER),
           CurrencyAmount.fromRawAmount(ETHER, totalValue),
           TradeType.EXACT_OUTPUT
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const uniswapTrade = new UniswapTrade(erc20Trade, opts)
+      const pegasysTrade = new UniswapTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([uniswapTrade, looksRareV2Trade, seaportTrade], {
+      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, looksRareV2Trade, seaportTrade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_FOR_1_LOOKSRARE_NFT_1_SEAPORT_NFT', methodParameters)
@@ -136,16 +136,16 @@ describe('SwapRouter.swapCallParameters', () => {
 
     it('erc20 + eth -> 1 looksRare nft & 1 seaport nft1', async () => {
       const erc20Trade = buildTrade([
-        await V3Trade.fromRoute(
-          new RouteV3([WETH_USDC_V3], USDC, ETHER),
+        await V2Trade.fromRoute(
+          new RouteV2([WETH_USDC_V3], USDC, ETHER),
           CurrencyAmount.fromRawAmount(ETHER, looksRareV2Value.toString()),
           TradeType.EXACT_OUTPUT
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const uniswapTrade = new UniswapTrade(erc20Trade, opts)
+      const pegasysTrade = new UniswapTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([uniswapTrade, looksRareV2Trade, seaportTrade], {
+      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, looksRareV2Trade, seaportTrade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_AND_ETH_FOR_1_LOOKSRARE_NFT_1_SEAPORT_NFT', methodParameters)
@@ -154,24 +154,24 @@ describe('SwapRouter.swapCallParameters', () => {
 
     it('2 erc20s -> 1 NFT', async () => {
       const erc20Trade1 = buildTrade([
-        await V3Trade.fromRoute(
-          new RouteV3([WETH_USDC_V3], USDC, ETHER),
+        await V2Trade.fromRoute(
+          new RouteV2([WETH_USDC_V3], USDC, ETHER),
           CurrencyAmount.fromRawAmount(ETHER, looksRareV2Value.div(2).toString()),
           TradeType.EXACT_OUTPUT
         ),
       ])
       const erc20Trade2 = buildTrade([
-        new V2Trade(
-          new RouteV2([USDC_DAI_V2, WETH_USDC_V2], DAI, ETHER),
+        new V1Trade(
+          new RouteV1([USDC_DAI_V2, WETH_USDC_V2], DAI, ETHER),
           CurrencyAmount.fromRawAmount(ETHER, looksRareV2Value.div(2).toString()),
           TradeType.EXACT_OUTPUT
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const uniswapTrade1 = new UniswapTrade(erc20Trade1, opts)
-      const uniswapTrade2 = new UniswapTrade(erc20Trade2, opts)
+      const pegasysTrade1 = new UniswapTrade(erc20Trade1, opts)
+      const pegasysTrade2 = new UniswapTrade(erc20Trade2, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([uniswapTrade1, uniswapTrade2, looksRareV2Trade], {
+      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade1, pegasysTrade2, looksRareV2Trade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_2_ERC20s_FOR_1_NFT', methodParameters)
@@ -180,16 +180,16 @@ describe('SwapRouter.swapCallParameters', () => {
 
     it('erc20 -> 1 invalid NFT', async () => {
       const erc20Trade = buildTrade([
-        await V3Trade.fromRoute(
-          new RouteV3([WETH_USDC_V3], USDC, ETHER),
+        await V2Trade.fromRoute(
+          new RouteV2([WETH_USDC_V3], USDC, ETHER),
           CurrencyAmount.fromRawAmount(ETHER, looksRareV2Value.toString()),
           TradeType.EXACT_OUTPUT
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const uniswapTrade = new UniswapTrade(erc20Trade, opts)
+      const pegasysTrade = new UniswapTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([uniswapTrade, invalidLooksRareV2Trade], {
+      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, invalidLooksRareV2Trade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_FOR_1_INVALID_NFT', methodParameters)
@@ -200,17 +200,17 @@ describe('SwapRouter.swapCallParameters', () => {
       const totalValue = looksRareV2Value.add(seaportValue).toString()
 
       const erc20Trade = buildTrade([
-        await V3Trade.fromRoute(
-          new RouteV3([WETH_USDC_V3], USDC, ETHER),
+        await V2Trade.fromRoute(
+          new RouteV2([WETH_USDC_V3], USDC, ETHER),
           CurrencyAmount.fromRawAmount(ETHER, totalValue),
           TradeType.EXACT_OUTPUT
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const uniswapTrade = new UniswapTrade(erc20Trade, opts)
+      const pegasysTrade = new UniswapTrade(erc20Trade, opts)
 
       // invalid looks rare trade to make it a partial fill
-      const methodParameters = SwapRouter.swapCallParameters([uniswapTrade, invalidLooksRareV2Trade, seaportTrade], {
+      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, invalidLooksRareV2Trade, seaportTrade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_FOR_NFTS_PARTIAL_FILL', methodParameters)

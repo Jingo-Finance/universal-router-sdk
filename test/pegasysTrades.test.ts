@@ -3,11 +3,11 @@ import JSBI from 'jsbi'
 import { BigNumber, utils, Wallet } from 'ethers'
 import { expandTo18Decimals } from '../src/utils/expandTo18Decimals'
 import { SwapRouter, UniswapTrade } from '../src'
-import { MixedRouteTrade, MixedRouteSDK } from '@uniswap/router-sdk'
-import { Trade as V2Trade, Pair, Route as RouteV2 } from '@uniswap/v2-sdk'
-import { Trade as V3Trade, Route as RouteV3, Pool } from '@uniswap/v3-sdk'
+import { MixedRouteTrade, MixedRouteSDK } from '@pollum-io/router-sdk'
+import { Trade as V1Trade, Pair, Route as RouteV1 } from '@pollum-io/v1-sdk'
+import { Trade as V2Trade, Route as RouteV2, Pool } from '@pollum-io/v2-sdk'
 import { generatePermitSignature, toInputPermit, makePermit, generateEip2098PermitSignature } from './utils/permit2'
-import { CurrencyAmount, TradeType } from '@uniswap/sdk-core'
+import { CurrencyAmount, TradeType } from '@pollum-io/sdk-core'
 import { registerFixture } from './forge/writeInterop'
 import { buildTrade, getUniswapPools, swapOptions, ETHER, DAI, USDC } from './utils/uniswapData'
 import { hexToDecimalString } from './utils/hexToDecimalString'
@@ -34,8 +34,8 @@ describe('Uniswap', () => {
   describe('v2', () => {
     it('encodes a single exactInput ETH->USDC swap', async () => {
       const inputEther = utils.parseEther('1').toString()
-      const trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2], ETHER, USDC),
+      const trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
@@ -50,8 +50,8 @@ describe('Uniswap', () => {
 
     it('encodes an exactInput ETH->USDC->DAI swap', async () => {
       const inputEther = utils.parseEther('1').toString()
-      const trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2, USDC_DAI_V2], ETHER, DAI),
+      const trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2, USDC_DAI_V2], ETHER, DAI),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
@@ -66,8 +66,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput USDC->ETH swap', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2], USDC, ETHER),
+      const trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -82,8 +82,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput USDC->ETH swap with permit', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2], USDC, ETHER),
+      const trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -100,8 +100,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput USDC->ETH swap with EIP-2098 permit', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2], USDC, ETHER),
+      const trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -118,8 +118,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput USDC->ETH swap with permit with v recovery id', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2], USDC, ETHER),
+      const trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -148,8 +148,8 @@ describe('Uniswap', () => {
 
     it('encodes an exactInput DAI->USDC->ETH swap', async () => {
       const inputDAI = utils.parseEther('10').toString()
-      const trade = new V2Trade(
-        new RouteV2([USDC_DAI_V2, WETH_USDC_V2], DAI, ETHER),
+      const trade = new V1Trade(
+        new RouteV1([USDC_DAI_V2, WETH_USDC_V2], DAI, ETHER),
         CurrencyAmount.fromRawAmount(DAI, inputDAI),
         TradeType.EXACT_INPUT
       )
@@ -164,8 +164,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactOutput ETH->USDC swap', async () => {
       const outputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2], ETHER, USDC),
+      const trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2], ETHER, USDC),
         CurrencyAmount.fromRawAmount(USDC, outputUSDC),
         TradeType.EXACT_OUTPUT
       )
@@ -180,8 +180,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactOutput USDC->ETH swap', async () => {
       const outputETH = utils.parseEther('1').toString()
-      const trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2], USDC, ETHER),
+      const trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2], USDC, ETHER),
         CurrencyAmount.fromRawAmount(ETHER, outputETH),
         TradeType.EXACT_OUTPUT
       )
@@ -198,8 +198,8 @@ describe('Uniswap', () => {
   describe('v3', () => {
     it('encodes a single exactInput ETH->USDC swap', async () => {
       const inputEther = utils.parseEther('1').toString()
-      const trade = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3], ETHER, USDC),
+      const trade = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
@@ -214,8 +214,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput USDC->ETH swap', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3], USDC, ETHER),
+      const trade = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -230,8 +230,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput USDC->ETH swap with permit', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3], USDC, ETHER),
+      const trade = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -253,8 +253,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput ETH->USDC->DAI swap', async () => {
       const inputEther = utils.parseEther('1').toString()
-      const trade = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3, USDC_DAI_V3], ETHER, DAI),
+      const trade = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3, USDC_DAI_V3], ETHER, DAI),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
@@ -269,8 +269,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactOutput ETH->USDC swap', async () => {
       const outputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3], ETHER, USDC),
+      const trade = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3], ETHER, USDC),
         CurrencyAmount.fromRawAmount(USDC, outputUSDC),
         TradeType.EXACT_OUTPUT
       )
@@ -285,8 +285,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactOutput USDC->ETH swap', async () => {
       const outputEther = utils.parseEther('1').toString()
-      const trade = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3], USDC, ETHER),
+      const trade = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3], USDC, ETHER),
         CurrencyAmount.fromRawAmount(ETHER, outputEther),
         TradeType.EXACT_OUTPUT
       )
@@ -301,8 +301,8 @@ describe('Uniswap', () => {
 
     it('encodes an exactOutput ETH->USDC->DAI swap', async () => {
       const outputDai = utils.parseEther('1000').toString()
-      const trade = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3, USDC_DAI_V3], ETHER, DAI),
+      const trade = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3, USDC_DAI_V3], ETHER, DAI),
         CurrencyAmount.fromRawAmount(DAI, outputDai),
         TradeType.EXACT_OUTPUT
       )
@@ -317,8 +317,8 @@ describe('Uniswap', () => {
 
     it('encodes an exactOutput DAI->USDC->ETH swap', async () => {
       const outputEther = utils.parseEther('1').toString()
-      const trade = await V3Trade.fromRoute(
-        new RouteV3([USDC_DAI_V3, WETH_USDC_V3], DAI, ETHER),
+      const trade = await V2Trade.fromRoute(
+        new RouteV2([USDC_DAI_V3, WETH_USDC_V3], DAI, ETHER),
         CurrencyAmount.fromRawAmount(ETHER, outputEther),
         TradeType.EXACT_OUTPUT
       )
@@ -417,13 +417,13 @@ describe('Uniswap', () => {
   describe('multi-route', async () => {
     it('encodes a split exactInput with 2 routes v3ETH->v3USDC & v2ETH->v2USDC swap', async () => {
       const inputEther = expandTo18Decimals(1)
-      const v2Trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2], ETHER, USDC),
+      const v2Trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
-      const v3Trade = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3], ETHER, USDC),
+      const v3Trade = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
@@ -438,18 +438,18 @@ describe('Uniswap', () => {
 
     it('encodes a split exactInput with 3 routes v3ETH->v3USDC & v2ETH->v2USDC swap', async () => {
       const inputEther = expandTo18Decimals(1)
-      const v2Trade = new V2Trade(
-        new RouteV2([WETH_USDC_V2], ETHER, USDC),
+      const v2Trade = new V1Trade(
+        new RouteV1([WETH_USDC_V2], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
-      const v3Trade1 = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3], ETHER, USDC),
+      const v3Trade1 = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
-      const v3Trade2 = await V3Trade.fromRoute(
-        new RouteV3([WETH_USDC_V3_LOW_FEE], ETHER, USDC),
+      const v3Trade2 = await V2Trade.fromRoute(
+        new RouteV2([WETH_USDC_V3_LOW_FEE], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )

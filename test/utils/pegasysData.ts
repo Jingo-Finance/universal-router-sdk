@@ -1,19 +1,19 @@
 import JSBI from 'jsbi'
 import { ethers } from 'ethers'
-import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@uniswap/router-sdk'
-import { Trade as V2Trade, Pair, Route as RouteV2, computePairAddress } from '@uniswap/v2-sdk'
+import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@pollum-io/router-sdk'
+import { Trade as V1Trade, Pair, Route as RouteV1, computePairAddress } from '@pollum-io/v1-sdk'
 import {
-  Trade as V3Trade,
+  Trade as V2Trade,
   Pool,
-  Route as RouteV3,
+  Route as RouteV2,
   nearestUsableTick,
   TickMath,
   TICK_SPACINGS,
   FeeAmount,
-} from '@uniswap/v3-sdk'
+} from '@pollum-io/v2-sdk'
 import { SwapOptions } from '../../src'
-import { CurrencyAmount, TradeType, Ether, Token, Percent, Currency } from '@uniswap/sdk-core'
-import IUniswapV3Pool from '@uniswap/v3-core/artifacts/contracts/UniswapV3Pool.sol/UniswapV3Pool.json'
+import { CurrencyAmount, TradeType, Ether, Token, Percent, Currency } from '@pollum-io/sdk-core'
+import IUniswapV3Pool from '@pollum-io/v2-core/artifacts/contracts/PegasysV2Pool.sol/PegasysV2Pool.json'
 import { TEST_RECIPIENT_ADDRESS } from './addresses'
 
 const V2_FACTORY = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
@@ -128,23 +128,23 @@ export function swapOptions(options: Partial<SwapOptions>): SwapOptions {
 // alternative constructor to create from protocol-specific sdks
 export function buildTrade(
   trades: (
+    | V1Trade<Currency, Currency, TradeType>
     | V2Trade<Currency, Currency, TradeType>
-    | V3Trade<Currency, Currency, TradeType>
     | MixedRouteTrade<Currency, Currency, TradeType>
   )[]
 ): RouterTrade<Currency, Currency, TradeType> {
   return new RouterTrade({
     v2Routes: trades
-      .filter((trade) => trade instanceof V2Trade)
+      .filter((trade) => trade instanceof V1Trade)
       .map((trade) => ({
-        routev2: trade.route as RouteV2<Currency, Currency>,
+        routev2: trade.route as RouteV1<Currency, Currency>,
         inputAmount: trade.inputAmount,
         outputAmount: trade.outputAmount,
       })),
     v3Routes: trades
-      .filter((trade) => trade instanceof V3Trade)
+      .filter((trade) => trade instanceof V2Trade)
       .map((trade) => ({
-        routev3: trade.route as RouteV3<Currency, Currency>,
+        routev3: trade.route as RouteV2<Currency, Currency>,
         inputAmount: trade.inputAmount,
         outputAmount: trade.outputAmount,
       })),

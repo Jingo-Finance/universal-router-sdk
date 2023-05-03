@@ -1,23 +1,23 @@
 import JSBI from 'jsbi'
 import { RoutePlanner, CommandType } from '../../utils/routerCommands'
-import { Trade as V2Trade, Pair } from '@uniswap/v2-sdk'
-import { Trade as V3Trade, Pool, encodeRouteToPath } from '@uniswap/v3-sdk'
+import { Trade as V1Trade, Pair } from '@pollum-io/v1-sdk'
+import { Trade as V2Trade, Pool, encodeRouteToPath } from '@pollum-io/v2-sdk'
 import {
   Trade as RouterTrade,
   MixedRouteTrade,
   Protocol,
   IRoute,
+  RouteV1,
   RouteV2,
-  RouteV3,
   MixedRouteSDK,
   MixedRoute,
   SwapOptions as RouterSwapOptions,
   getOutputOfPools,
   encodeMixedRouteToPath,
   partitionMixedRouteByProtocol,
-} from '@uniswap/router-sdk'
+} from '@pollum-io/router-sdk'
 import { Permit2Permit } from '../../utils/inputTokens'
-import { Currency, TradeType, CurrencyAmount, Percent } from '@uniswap/sdk-core'
+import { Currency, TradeType, CurrencyAmount, Percent } from '@pollum-io/sdk-core'
 import { Command, RouterTradeType, TradeConfig } from '../Command'
 import { SENDER_AS_RECIPIENT, ROUTER_AS_RECIPIENT, CONTRACT_BALANCE } from '../../utils/constants'
 
@@ -35,10 +35,10 @@ interface Swap<TInput extends Currency, TOutput extends Currency> {
   outputAmount: CurrencyAmount<TOutput>
 }
 
-// Wrapper for uniswap router-sdk trade entity to encode swaps for Universal Router
+// Wrapper for pegasys router-sdk trade entity to encode swaps for Universal Router
 // also translates trade objects from previous (v2, v3) SDKs
-export class UniswapTrade implements Command {
-  readonly tradeType: RouterTradeType = RouterTradeType.UniswapTrade
+export class PegasysTrade implements Command {
+  readonly tradeType: RouterTradeType = RouterTradeType.PegasysTrade
   constructor(public trade: RouterTrade<Currency, Currency, TradeType>, public options: SwapOptions) {}
 
   encode(planner: RoutePlanner, _config: TradeConfig): void {
@@ -66,10 +66,10 @@ export class UniswapTrade implements Command {
 
     for (const swap of this.trade.swaps) {
       switch (swap.route.protocol) {
-        case Protocol.V2:
+        case Protocol.V1:
           addV2Swap(planner, swap, this.trade.tradeType, this.options, payerIsUser, routerMustCustody)
           break
-        case Protocol.V3:
+        case Protocol.V2:
           addV3Swap(planner, swap, this.trade.tradeType, this.options, payerIsUser, routerMustCustody)
           break
         case Protocol.MIXED:
@@ -103,7 +103,7 @@ export class UniswapTrade implements Command {
   }
 }
 
-// encode a uniswap v2 swap
+// encode a Pegasys v2 swap
 function addV2Swap<TInput extends Currency, TOutput extends Currency>(
   planner: RoutePlanner,
   { route, inputAmount, outputAmount }: Swap<TInput, TOutput>,
@@ -112,14 +112,14 @@ function addV2Swap<TInput extends Currency, TOutput extends Currency>(
   payerIsUser: boolean,
   routerMustCustody: boolean
 ): void {
-  const trade = new V2Trade(
-    route as RouteV2<TInput, TOutput>,
+  const trade = new V1Trade(
+    route as RouteV1<TInput, TOutput>,
     tradeType == TradeType.EXACT_INPUT ? inputAmount : outputAmount,
     tradeType
   )
 
   if (tradeType == TradeType.EXACT_INPUT) {
-    planner.addCommand(CommandType.V2_SWAP_EXACT_IN, [
+    planner.addCommand(CommandType.V1_SWAP_EXACT_IN, [
       // if native, we have to unwrap so keep in the router for now
       routerMustCustody ? ROUTER_AS_RECIPIENT : options.recipient,
       trade.maximumAmountIn(options.slippageTolerance).quotient.toString(),
@@ -128,7 +128,7 @@ function addV2Swap<TInput extends Currency, TOutput extends Currency>(
       payerIsUser,
     ])
   } else if (tradeType == TradeType.EXACT_OUTPUT) {
-    planner.addCommand(CommandType.V2_SWAP_EXACT_OUT, [
+    planner.addCommand(CommandType.V1_SWAP_EXACT_OUT, [
       routerMustCustody ? ROUTER_AS_RECIPIENT : options.recipient,
       trade.minimumAmountOut(options.slippageTolerance).quotient.toString(),
       trade.maximumAmountIn(options.slippageTolerance).quotient.toString(),
@@ -138,7 +138,7 @@ function addV2Swap<TInput extends Currency, TOutput extends Currency>(
   }
 }
 
-// encode a uniswap v3 swap
+// encode a Pegasys v3 swap
 function addV3Swap<TInput extends Currency, TOutput extends Currency>(
   planner: RoutePlanner,
   { route, inputAmount, outputAmount }: Swap<TInput, TOutput>,
@@ -147,16 +147,16 @@ function addV3Swap<TInput extends Currency, TOutput extends Currency>(
   payerIsUser: boolean,
   routerMustCustody: boolean
 ): void {
-  const trade = V3Trade.createUncheckedTrade({
-    route: route as RouteV3<TInput, TOutput>,
+  const trade = V2Trade.createUncheckedTrade({
+    route: route as RouteV2<TInput, TOutput>,
     inputAmount,
     outputAmount,
     tradeType,
   })
 
-  const path = encodeRouteToPath(route as RouteV3<TInput, TOutput>, trade.tradeType === TradeType.EXACT_OUTPUT)
+  const path = encodeRouteToPath(route as RouteV2<TInput, TOutput>, trade.tradeType === TradeType.EXACT_OUTPUT)
   if (tradeType == TradeType.EXACT_INPUT) {
-    planner.addCommand(CommandType.V3_SWAP_EXACT_IN, [
+    planner.addCommand(CommandType.V2_SWAP_EXACT_IN, [
       routerMustCustody ? ROUTER_AS_RECIPIENT : options.recipient,
       trade.maximumAmountIn(options.slippageTolerance).quotient.toString(),
       trade.minimumAmountOut(options.slippageTolerance).quotient.toString(),
@@ -164,7 +164,7 @@ function addV3Swap<TInput extends Currency, TOutput extends Currency>(
       payerIsUser,
     ])
   } else if (tradeType == TradeType.EXACT_OUTPUT) {
-    planner.addCommand(CommandType.V3_SWAP_EXACT_OUT, [
+    planner.addCommand(CommandType.V2_SWAP_EXACT_OUT, [
       routerMustCustody ? ROUTER_AS_RECIPIENT : options.recipient,
       trade.minimumAmountOut(options.slippageTolerance).quotient.toString(),
       trade.maximumAmountIn(options.slippageTolerance).quotient.toString(),
@@ -239,7 +239,7 @@ function addMixedSwap<TInput extends Currency, TOutput extends Currency>(
     if (mixedRouteIsAllV3(newRoute)) {
       const path: string = encodeMixedRouteToPath(newRoute)
 
-      planner.addCommand(CommandType.V3_SWAP_EXACT_IN, [
+      planner.addCommand(CommandType.V2_SWAP_EXACT_IN, [
         // if not last section: send tokens directly to the first v2 pair of the next section
         // note: because of the partitioning function we can be sure that the next section is v2
         isLastSectionInRoute(i) ? tradeRecipient : (sections[i + 1][0] as Pair).liquidityToken.address,
@@ -249,7 +249,7 @@ function addMixedSwap<TInput extends Currency, TOutput extends Currency>(
         payerIsUser && i === 0, // payerIsUser
       ])
     } else {
-      planner.addCommand(CommandType.V2_SWAP_EXACT_IN, [
+      planner.addCommand(CommandType.V1_SWAP_EXACT_IN, [
         isLastSectionInRoute(i) ? tradeRecipient : ROUTER_AS_RECIPIENT, // recipient
         i === 0 ? amountIn : CONTRACT_BALANCE, // amountIn
         !isLastSectionInRoute(i) ? 0 : amountOut, // amountOutMin
