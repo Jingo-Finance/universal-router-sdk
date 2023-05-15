@@ -2,9 +2,10 @@ import { BigNumber } from 'ethers'
 
 export const UNIVERSAL_ROUTER_ADDRESS = (chainId: number): string => {
   switch (chainId) {
+    case 570: // rollux mainnet
+      return '0x9A49e44aAd6c8CF7ABa4b3f876DA38a0215b0eA4'
     case 57000: // rollux testnet
       return '0xdB29597a99b8C9389CB8397399f9923CBF8C2587'
-
     default:
       throw new Error(`Universal Router not deployed on chain ${chainId}`)
   }
@@ -12,6 +13,7 @@ export const UNIVERSAL_ROUTER_ADDRESS = (chainId: number): string => {
 
 export const WETH_ADDRESS = (chainId: number): string => {
   switch (chainId) {
+    case 570: // rollux mainnet
     case 57000: // rollux testnet
       return '0x4200000000000000000000000000000000000006'
     default:
