@@ -6,8 +6,8 @@ import { defaultAbiCoder } from 'ethers/lib/utils'
  * @enum {number}
  */
 export enum CommandType {
-  V2_SWAP_EXACT_IN = 0x00,
-  V2_SWAP_EXACT_OUT = 0x01,
+  V3_SWAP_EXACT_IN = 0x00,
+  V3_SWAP_EXACT_OUT = 0x01,
   PERMIT2_TRANSFER_FROM = 0x02,
   PERMIT2_PERMIT_BATCH = 0x03,
   SWEEP = 0x04,
@@ -82,8 +82,8 @@ const ABI_DEFINITION: { [key in CommandType]: string[] } = {
   [CommandType.PERMIT2_TRANSFER_FROM_BATCH]: [PERMIT2_TRANSFER_FROM_BATCH_STRUCT],
 
   // Pegasys Actions
-  [CommandType.V2_SWAP_EXACT_IN]: ['address', 'uint256', 'uint256', 'bytes', 'bool'],
-  [CommandType.V2_SWAP_EXACT_OUT]: ['address', 'uint256', 'uint256', 'bytes', 'bool'],
+  [CommandType.V3_SWAP_EXACT_IN]: ['address', 'uint256', 'uint256', 'bytes', 'bool'],
+  [CommandType.V3_SWAP_EXACT_OUT]: ['address', 'uint256', 'uint256', 'bytes', 'bool'],
   [CommandType.V1_SWAP_EXACT_IN]: ['address', 'uint256', 'uint256', 'address[]', 'bool'],
   [CommandType.V1_SWAP_EXACT_OUT]: ['address', 'uint256', 'uint256', 'address[]', 'bool'],
 

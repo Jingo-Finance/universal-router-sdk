@@ -3,21 +3,21 @@ import { ethers } from 'ethers'
 import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@pollum-io/router-sdk'
 import { Trade as V1Trade, Pair, Route as RouteV1, computePairAddress } from '@pollum-io/v1-sdk'
 import {
-  Trade as V2Trade,
+  Trade as V3Trade,
   Pool,
-  Route as RouteV2,
+  Route as RouteV3,
   nearestUsableTick,
   TickMath,
   TICK_SPACINGS,
   FeeAmount,
-} from '@pollum-io/v2-sdk'
+} from '@pollum-io/v3-sdk'
 import { SwapOptions } from '../../src'
 import { CurrencyAmount, TradeType, Ether, Token, Percent, Currency } from '@pollum-io/sdk-core'
-import IUniswapV3Pool from '@pollum-io/v2-core/artifacts/contracts/PegasysV2Pool.sol/PegasysV2Pool.json'
+import IUniswapV3Pool from '@pollum-io/v3-core/artifacts/contracts/PegasysV3Pool.sol/PegasysV3Pool.json'
 import { TEST_RECIPIENT_ADDRESS } from './addresses'
 
-const V2_FACTORY = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
-const V2_ABI = [
+const V1_FACTORY = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
+const V1_ABI = [
   {
     constant: true,
     inputs: [],
@@ -54,25 +54,25 @@ export const USDC = new Token(1, '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', 6
 export const FEE_AMOUNT = FeeAmount.MEDIUM
 
 type UniswapPools = {
-  WETH_USDC_V2: Pair
-  USDC_DAI_V2: Pair
+  WETH_USDC_V1: Pair
+  USDC_DAI_V1: Pair
   WETH_USDC_V3: Pool
   WETH_USDC_V3_LOW_FEE: Pool
   USDC_DAI_V3: Pool
 }
 
-export async function getUniswapPools(forkBlock?: number): Promise<UniswapPools> {
+export async function getPegasysPools(forkBlock?: number): Promise<UniswapPools> {
   const fork = forkBlock ?? FORK_BLOCK
-  const WETH_USDC_V2 = await getPair(WETH, USDC, fork)
-  const USDC_DAI_V2 = await getPair(USDC, DAI, fork)
+  const WETH_USDC_V1 = await getPair(WETH, USDC, fork)
+  const USDC_DAI_V1 = await getPair(USDC, DAI, fork)
 
   const WETH_USDC_V3 = await getPool(WETH, USDC, FEE_AMOUNT, fork)
   const WETH_USDC_V3_LOW_FEE = await getPool(WETH, USDC, FeeAmount.LOW, fork)
   const USDC_DAI_V3 = await getPool(USDC, DAI, FeeAmount.LOW, fork)
 
   return {
-    WETH_USDC_V2,
-    USDC_DAI_V2,
+    WETH_USDC_V1,
+    USDC_DAI_V1,
     WETH_USDC_V3,
     WETH_USDC_V3_LOW_FEE,
     USDC_DAI_V3,
@@ -84,8 +84,8 @@ function getProvider(): ethers.providers.BaseProvider {
 }
 
 export async function getPair(tokenA: Token, tokenB: Token, blockNumber: number): Promise<Pair> {
-  const pairAddress = computePairAddress({ factoryAddress: V2_FACTORY, tokenA, tokenB })
-  const contract = new ethers.Contract(pairAddress, V2_ABI, getProvider())
+  const pairAddress = computePairAddress({ factoryAddress: V1_FACTORY, tokenA, tokenB })
+  const contract = new ethers.Contract(pairAddress, V1_ABI, getProvider())
   const { reserve0, reserve1 } = await contract.getReserves({ blockTag: blockNumber })
   const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA] // does safety checks
   return new Pair(CurrencyAmount.fromRawAmount(token0, reserve0), CurrencyAmount.fromRawAmount(token1, reserve1))
@@ -129,22 +129,22 @@ export function swapOptions(options: Partial<SwapOptions>): SwapOptions {
 export function buildTrade(
   trades: (
     | V1Trade<Currency, Currency, TradeType>
-    | V2Trade<Currency, Currency, TradeType>
+    | V3Trade<Currency, Currency, TradeType>
     | MixedRouteTrade<Currency, Currency, TradeType>
   )[]
 ): RouterTrade<Currency, Currency, TradeType> {
   return new RouterTrade({
-    v2Routes: trades
+    v1Routes: trades
       .filter((trade) => trade instanceof V1Trade)
       .map((trade) => ({
-        routev2: trade.route as RouteV1<Currency, Currency>,
+        routev1: trade.route as RouteV1<Currency, Currency>,
         inputAmount: trade.inputAmount,
         outputAmount: trade.outputAmount,
       })),
     v3Routes: trades
-      .filter((trade) => trade instanceof V2Trade)
+      .filter((trade) => trade instanceof V3Trade)
       .map((trade) => ({
-        routev3: trade.route as RouteV2<Currency, Currency>,
+        routev3: trade.route as RouteV3<Currency, Currency>,
         inputAmount: trade.inputAmount,
         outputAmount: trade.outputAmount,
       })),
