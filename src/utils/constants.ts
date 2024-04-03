@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers'
 export const UNIVERSAL_ROUTER_ADDRESS = (chainId: number): string => {
   switch (chainId) {
     case 570: // rollux mainnet
-      return '0x0d476148769E4CF5AFFB59e5552cAC8a30D13669'
+      return '0x42B6E8dCe18da66c4deF79B46617B85D85b3CD43'
     case 57000: // rollux testnet
       return '0x85919312dB290fCcFe9D85d11CEA94DD97b0a1a7'
     default:

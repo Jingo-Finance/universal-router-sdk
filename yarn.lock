@@ -1847,10 +1847,10 @@
     dotenv "^14.2.0"
     hardhat-watcher "^2.1.1"
 
-"@pollum-io/universal-router@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@pollum-io/universal-router/-/universal-router-0.0.4.tgz#ceffc90871be0c15d4e320213cc565bdb2cbe3b2"
-  integrity sha512-arEJ5re0lsfjxmE5wkk4Qff7gDsM3NvhZKUdO9pkIvwp4Yt6WPKLBFXro9wSlA2KAXWECjPS6+p7jEBXpBINSg==
+"@pollum-io/universal-router@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@pollum-io/universal-router/-/universal-router-0.0.5.tgz#8ad00985ae7ffb69681114641ba85eb93fe1df46"
+  integrity sha512-M75xkhTD6awWNfCckPcuquzRnGGICPJ1UeFVY7Et69FrCrV+BoZfdAySxAWbnzaAZfelX+xOz80CCThat392bA==
   dependencies:
     "@openzeppelin/contracts" "4.7.0"
     "@pollum-io/pegasys-protocol" "0.0.17"
