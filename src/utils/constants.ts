@@ -3,9 +3,9 @@ import { BigNumber } from 'ethers'
 export const UNIVERSAL_ROUTER_ADDRESS = (chainId: number): string => {
   switch (chainId) {
     case 570: // rollux mainnet
-      return '0x9A49e44aAd6c8CF7ABa4b3f876DA38a0215b0eA4'
+      return '0xAf14C7514eF373d5d0916A522648F46ebc1A3d2C'
     case 57000: // rollux testnet
-      return '0xdB29597a99b8C9389CB8397399f9923CBF8C2587'
+      return '0x85919312dB290fCcFe9D85d11CEA94DD97b0a1a7'
     default:
       throw new Error(`Universal Router not deployed on chain ${chainId}`)
   }
@@ -21,7 +21,7 @@ export const WETH_ADDRESS = (chainId: number): string => {
   }
 }
 
-export const PERMIT2_ADDRESS = '0xA4f6261a5F45928b79d2d5ED22373e4D4d637C47'
+export const PERMIT2_ADDRESS = '0x000000000022D473030F116dDEE9F6B43aC78BA3'
 
 export const CONTRACT_BALANCE = BigNumber.from(2).pow(255)
 export const ETH_ADDRESS = '0x0000000000000000000000000000000000000000'

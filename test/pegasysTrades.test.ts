@@ -2,14 +2,14 @@ import { expect } from 'chai'
 import JSBI from 'jsbi'
 import { BigNumber, utils, Wallet } from 'ethers'
 import { expandTo18Decimals } from '../src/utils/expandTo18Decimals'
-import { SwapRouter, UniswapTrade } from '../src'
+import { SwapRouter, PegasysTrade } from '../src'
 import { MixedRouteTrade, MixedRouteSDK } from '@pollum-io/router-sdk'
 import { Trade as V1Trade, Pair, Route as RouteV1 } from '@pollum-io/v1-sdk'
-import { Trade as V2Trade, Route as RouteV2, Pool } from '@pollum-io/v2-sdk'
+import { Trade as V3Trade, Route as RouteV3, Pool } from '@pollum-io/v3-sdk'
 import { generatePermitSignature, toInputPermit, makePermit, generateEip2098PermitSignature } from './utils/permit2'
 import { CurrencyAmount, TradeType } from '@pollum-io/sdk-core'
 import { registerFixture } from './forge/writeInterop'
-import { buildTrade, getUniswapPools, swapOptions, ETHER, DAI, USDC } from './utils/uniswapData'
+import { buildTrade, getPegasysPools, swapOptions, ETHER, DAI, USDC } from './utils/pegasysData'
 import { hexToDecimalString } from './utils/hexToDecimalString'
 import { FORGE_PERMIT2_ADDRESS, FORGE_ROUTER_ADDRESS } from './utils/addresses'
 
@@ -17,16 +17,16 @@ const FORK_BLOCK = 16075500
 
 // note: these tests aren't testing much but registering calldata to interop file
 // for use in forge fork tests
-describe('Uniswap', () => {
+describe('Pegasys', () => {
   const wallet = new Wallet(utils.zeroPad('0x1234', 32))
-  let WETH_USDC_V2: Pair
-  let USDC_DAI_V2: Pair
+  let WETH_USDC_V1: Pair
+  let USDC_DAI_V1: Pair
   let WETH_USDC_V3: Pool
   let WETH_USDC_V3_LOW_FEE: Pool
   let USDC_DAI_V3: Pool
 
   before(async () => {
-    ;({ WETH_USDC_V2, USDC_DAI_V2, WETH_USDC_V3, USDC_DAI_V3, WETH_USDC_V3_LOW_FEE } = await getUniswapPools(
+    ; ({ WETH_USDC_V1, USDC_DAI_V1, WETH_USDC_V3, USDC_DAI_V3, WETH_USDC_V3_LOW_FEE } = await getPegasysPools(
       FORK_BLOCK
     ))
   })
@@ -35,13 +35,13 @@ describe('Uniswap', () => {
     it('encodes a single exactInput ETH->USDC swap', async () => {
       const inputEther = utils.parseEther('1').toString()
       const trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2], ETHER, USDC),
+        new RouteV1([WETH_USDC_V1], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1_ETH_FOR_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -51,13 +51,13 @@ describe('Uniswap', () => {
     it('encodes an exactInput ETH->USDC->DAI swap', async () => {
       const inputEther = utils.parseEther('1').toString()
       const trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2, USDC_DAI_V2], ETHER, DAI),
+        new RouteV1([WETH_USDC_V1, USDC_DAI_V1], ETHER, DAI),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1_ETH_FOR_USDC_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -67,13 +67,13 @@ describe('Uniswap', () => {
     it('encodes a single exactInput USDC->ETH swap', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
       const trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2], USDC, ETHER),
+        new RouteV1([WETH_USDC_V1], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1000_USDC_FOR_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -83,7 +83,7 @@ describe('Uniswap', () => {
     it('encodes a single exactInput USDC->ETH swap with permit', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
       const trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2], USDC, ETHER),
+        new RouteV1([WETH_USDC_V1], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -91,7 +91,7 @@ describe('Uniswap', () => {
       const signature = await generatePermitSignature(permit, wallet, trade.route.chainId, FORGE_PERMIT2_ADDRESS)
       const opts = swapOptions({ inputTokenPermit: toInputPermit(signature, permit) })
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1000_USDC_FOR_ETH_PERMIT', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -101,7 +101,7 @@ describe('Uniswap', () => {
     it('encodes a single exactInput USDC->ETH swap with EIP-2098 permit', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
       const trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2], USDC, ETHER),
+        new RouteV1([WETH_USDC_V1], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -109,7 +109,7 @@ describe('Uniswap', () => {
       const signature = await generateEip2098PermitSignature(permit, wallet, trade.route.chainId)
       const opts = swapOptions({ inputTokenPermit: toInputPermit(signature, permit) })
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1000_USDC_FOR_ETH_2098_PERMIT', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -119,7 +119,7 @@ describe('Uniswap', () => {
     it('encodes a single exactInput USDC->ETH swap with permit with v recovery id', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
       const trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2], USDC, ETHER),
+        new RouteV1([WETH_USDC_V1], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -139,7 +139,7 @@ describe('Uniswap', () => {
       expect(utils.joinSignature(utils.splitSignature(signature))).to.eq(originalSignature)
       const opts = swapOptions({ inputTokenPermit: toInputPermit(signature, permit) })
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1000_USDC_FOR_ETH_PERMIT_V_RECOVERY_PARAM', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -149,13 +149,13 @@ describe('Uniswap', () => {
     it('encodes an exactInput DAI->USDC->ETH swap', async () => {
       const inputDAI = utils.parseEther('10').toString()
       const trade = new V1Trade(
-        new RouteV1([USDC_DAI_V2, WETH_USDC_V2], DAI, ETHER),
+        new RouteV1([USDC_DAI_V1, WETH_USDC_V1], DAI, ETHER),
         CurrencyAmount.fromRawAmount(DAI, inputDAI),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_10_DAI_FOR_ETH_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -165,13 +165,13 @@ describe('Uniswap', () => {
     it('encodes a single exactOutput ETH->USDC swap', async () => {
       const outputUSDC = utils.parseUnits('1000', 6).toString()
       const trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2], ETHER, USDC),
+        new RouteV1([WETH_USDC_V1], ETHER, USDC),
         CurrencyAmount.fromRawAmount(USDC, outputUSDC),
         TradeType.EXACT_OUTPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_ETH_FOR_1000_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.not.equal('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -181,13 +181,13 @@ describe('Uniswap', () => {
     it('encodes a single exactOutput USDC->ETH swap', async () => {
       const outputETH = utils.parseEther('1').toString()
       const trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2], USDC, ETHER),
+        new RouteV1([WETH_USDC_V1], USDC, ETHER),
         CurrencyAmount.fromRawAmount(ETHER, outputETH),
         TradeType.EXACT_OUTPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_USDC_FOR_1_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -198,14 +198,14 @@ describe('Uniswap', () => {
   describe('v3', () => {
     it('encodes a single exactInput ETH->USDC swap', async () => {
       const inputEther = utils.parseEther('1').toString()
-      const trade = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3], ETHER, USDC),
+      const trade = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_1_ETH_FOR_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -214,14 +214,14 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput USDC->ETH swap', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3], USDC, ETHER),
+      const trade = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_1000_USDC_FOR_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -230,8 +230,8 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput USDC->ETH swap with permit', async () => {
       const inputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3], USDC, ETHER),
+      const trade = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3], USDC, ETHER),
         CurrencyAmount.fromRawAmount(USDC, inputUSDC),
         TradeType.EXACT_INPUT
       )
@@ -244,7 +244,7 @@ describe('Uniswap', () => {
       )
       const opts = swapOptions({ inputTokenPermit: toInputPermit(signature, permit) })
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_1000_USDC_FOR_ETH_PERMIT', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -253,14 +253,14 @@ describe('Uniswap', () => {
 
     it('encodes a single exactInput ETH->USDC->DAI swap', async () => {
       const inputEther = utils.parseEther('1').toString()
-      const trade = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3, USDC_DAI_V3], ETHER, DAI),
+      const trade = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3, USDC_DAI_V3], ETHER, DAI),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_1_ETH_FOR_DAI_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -269,14 +269,14 @@ describe('Uniswap', () => {
 
     it('encodes a single exactOutput ETH->USDC swap', async () => {
       const outputUSDC = utils.parseUnits('1000', 6).toString()
-      const trade = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3], ETHER, USDC),
+      const trade = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3], ETHER, USDC),
         CurrencyAmount.fromRawAmount(USDC, outputUSDC),
         TradeType.EXACT_OUTPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_ETH_FOR_1000_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.not.equal('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -285,14 +285,14 @@ describe('Uniswap', () => {
 
     it('encodes a single exactOutput USDC->ETH swap', async () => {
       const outputEther = utils.parseEther('1').toString()
-      const trade = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3], USDC, ETHER),
+      const trade = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3], USDC, ETHER),
         CurrencyAmount.fromRawAmount(ETHER, outputEther),
         TradeType.EXACT_OUTPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_USDC_FOR_1_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -301,14 +301,14 @@ describe('Uniswap', () => {
 
     it('encodes an exactOutput ETH->USDC->DAI swap', async () => {
       const outputDai = utils.parseEther('1000').toString()
-      const trade = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3, USDC_DAI_V3], ETHER, DAI),
+      const trade = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3, USDC_DAI_V3], ETHER, DAI),
         CurrencyAmount.fromRawAmount(DAI, outputDai),
         TradeType.EXACT_OUTPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_ETH_FOR_1000_DAI_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.not.equal('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -317,14 +317,14 @@ describe('Uniswap', () => {
 
     it('encodes an exactOutput DAI->USDC->ETH swap', async () => {
       const outputEther = utils.parseEther('1').toString()
-      const trade = await V2Trade.fromRoute(
-        new RouteV2([USDC_DAI_V3, WETH_USDC_V3], DAI, ETHER),
+      const trade = await V3Trade.fromRoute(
+        new RouteV3([USDC_DAI_V3, WETH_USDC_V3], DAI, ETHER),
         CurrencyAmount.fromRawAmount(ETHER, outputEther),
         TradeType.EXACT_OUTPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_DAI_FOR_1_ETH_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.equal('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -336,13 +336,13 @@ describe('Uniswap', () => {
     it('encodes a mixed exactInput v3ETH->v2USDC->DAI swap', async () => {
       const inputEther = utils.parseEther('1').toString()
       const trade = await MixedRouteTrade.fromRoute(
-        new MixedRouteSDK([WETH_USDC_V3, USDC_DAI_V2], ETHER, DAI),
+        new MixedRouteSDK([WETH_USDC_V3, USDC_DAI_V1], ETHER, DAI),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_1_ETH_FOR_DAI', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -352,13 +352,13 @@ describe('Uniswap', () => {
     it('encodes a mixed exactInput v2ETH->v3USDC->DAI swap', async () => {
       const inputEther = utils.parseEther('1').toString()
       const trade = await MixedRouteTrade.fromRoute(
-        new MixedRouteSDK([WETH_USDC_V2, USDC_DAI_V3], ETHER, DAI),
+        new MixedRouteSDK([WETH_USDC_V1, USDC_DAI_V3], ETHER, DAI),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_1_ETH_FOR_DAI_V2_FIRST', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -368,13 +368,13 @@ describe('Uniswap', () => {
     it('encodes a mixed exactInput v2ETH->v2USDC->DAI swap', async () => {
       const inputEther = utils.parseEther('1').toString()
       const trade = await MixedRouteTrade.fromRoute(
-        new MixedRouteSDK([WETH_USDC_V2, USDC_DAI_V2], ETHER, DAI),
+        new MixedRouteSDK([WETH_USDC_V1, USDC_DAI_V1], ETHER, DAI),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_1_ETH_FOR_DAI_V2_ONLY', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -390,7 +390,7 @@ describe('Uniswap', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_1_ETH_FOR_DAI_V3_ONLY', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -400,13 +400,13 @@ describe('Uniswap', () => {
     it('encodes a mixed exactInput v2DAI->v3USDC->ETH swap', async () => {
       const inputDai = utils.parseEther('1000').toString()
       const trade = await MixedRouteTrade.fromRoute(
-        new MixedRouteSDK([USDC_DAI_V2, WETH_USDC_V3], DAI, ETHER),
+        new MixedRouteSDK([USDC_DAI_V1, WETH_USDC_V3], DAI, ETHER),
         CurrencyAmount.fromRawAmount(DAI, inputDai),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_DAI_FOR_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -418,18 +418,18 @@ describe('Uniswap', () => {
     it('encodes a split exactInput with 2 routes v3ETH->v3USDC & v2ETH->v2USDC swap', async () => {
       const inputEther = expandTo18Decimals(1)
       const v2Trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2], ETHER, USDC),
+        new RouteV1([WETH_USDC_V1], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
-      const v3Trade = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3], ETHER, USDC),
+      const v3Trade = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([v2Trade, v3Trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new UniswapTrade(buildTrade([v2Trade, v3Trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([v2Trade, v3Trade]), opts))
       registerFixture('_UNISWAP_SPLIT_TWO_ROUTES_ETH_TO_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(JSBI.multiply(inputEther, JSBI.BigInt(2)).toString())
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -439,17 +439,17 @@ describe('Uniswap', () => {
     it('encodes a split exactInput with 3 routes v3ETH->v3USDC & v2ETH->v2USDC swap', async () => {
       const inputEther = expandTo18Decimals(1)
       const v2Trade = new V1Trade(
-        new RouteV1([WETH_USDC_V2], ETHER, USDC),
+        new RouteV1([WETH_USDC_V1], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
-      const v3Trade1 = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3], ETHER, USDC),
+      const v3Trade1 = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
-      const v3Trade2 = await V2Trade.fromRoute(
-        new RouteV2([WETH_USDC_V3_LOW_FEE], ETHER, USDC),
+      const v3Trade2 = await V3Trade.fromRoute(
+        new RouteV3([WETH_USDC_V3_LOW_FEE], ETHER, USDC),
         CurrencyAmount.fromRawAmount(ETHER, inputEther),
         TradeType.EXACT_INPUT
       )
@@ -457,7 +457,7 @@ describe('Uniswap', () => {
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([v2Trade, v3Trade1, v3Trade2]), opts)
       const methodParametersV2 = SwapRouter.swapCallParameters([
-        new UniswapTrade(buildTrade([v2Trade, v3Trade1, v3Trade2]), opts),
+        new PegasysTrade(buildTrade([v2Trade, v3Trade1, v3Trade2]), opts),
       ])
       registerFixture('_UNISWAP_SPLIT_TWO_ROUTES_ETH_TO_USDC', methodParameters)
       registerFixture('_UNISWAP_SPLIT_THREE_ROUTES_ETH_TO_USDC', methodParameters)

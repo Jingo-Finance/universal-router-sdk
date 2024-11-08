@@ -1,5 +1,5 @@
 # universal-router-sdk
-This SDK facilitates interactions with the contracts in [Universal Router](https://github.com/Uniswap/universal-router)
+This SDK facilitates interactions with the contracts in [Universal Router](https://github.com/pegasys-fi/universal-router)
 
 ## Usage
 Install latest version of universal-router-sdk. Then import the corresponding Trade class and Data object for each protocol you'd like to interact with.
@@ -24,11 +24,11 @@ const seaportTrades = new SeaportTrade([seaportData1])
 const { calldata, value } = SwapRouter.swapCallParameters([looksRareTrades, seaportTrades])
 ```
 
-### Trading ERC20s on Uniswap
+### Trading ERC20s on Pegasys
 warning: `swapERC20CallParameters()` to be deprecated in favor of `swapCallParameters()`
 ```typescript
 import { TradeType } from '@uniswap/sdk-core'
-import { Trade as V1TradeSDK } from '@uniswap/v2-sdk'
+import { Trade as V1TradeSDK } from '@uniswap/v1-sdk'
 import { Trade as V3TradeSDK } from '@uniswap/v3-sdk'
 import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@uniswap/router-sdk'
 
@@ -47,7 +47,7 @@ Send ETH to the router by trading an ERC20 for ETH with a Uniswap Trade and enco
 Use `trade_type: TradeType.EXACT_OUTPUT` to cover the entire NFT price, alternatively the transaction will send supplemental ETH to fulfill the entire price if the swap does not cover it in full. Keep in mind that `TradeType.EXACT_INPUT` trades are subject to slippage on output, and ETH will be sent to cover potential slippage and any remaining ETH will be returned to sender.
 ```typescript
 import { TradeType } from '@uniswap/sdk-core'
-import { Trade as V1TradeSDK } from '@uniswap/v2-sdk'
+import { Trade as V1TradeSDK } from '@uniswap/v1-sdk'
 import { Trade as V3TradeSDK } from '@uniswap/v3-sdk'
 import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@uniswap/router-sdk'
 import {
@@ -76,7 +76,7 @@ The current router purchases all NFTs with ETH, but you can send WETH to the rou
 ```typescript
 import {
   ROUTER_AS_RECIPIENT,
-  UniswapTrade,
+  PegasysTrade,
   LooksRareTrade,
   LooksRareData,
   SeaportTrade,
