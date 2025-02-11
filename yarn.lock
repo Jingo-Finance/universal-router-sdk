@@ -1800,15 +1800,15 @@
   dependencies:
     web3 "^1.7.3"
 
-"@pollum-io/router-sdk@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@pollum-io/router-sdk/-/router-sdk-0.0.6.tgz#a9f9b5d0a2e8bf2b389e24aec4e73c91bc66bf97"
-  integrity sha512-GCLSiQO130ll0ZVv+4lRW5Ncgujc5+fKy+vajm3QXRLtQuftMUGhjrDM67bKHluJmSpd3C3IwdhSQFnYnTs7aA==
+"@pollum-io/router-sdk@0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@pollum-io/router-sdk/-/router-sdk-0.0.7.tgz#12b61dbaf1e0e20889201d09c7a52c646fb3a870"
+  integrity sha512-c81VcsZJZ/vvTYnCM6SDCQBK6LV3yr0T8mKXoN8Z95xBow/xQOgppf04iwofKcKMS1NVP0ZqaXUW9ut30Xvn4Q==
   dependencies:
     "@ethersproject/abi" "^5.5.0"
     "@pollum-io/sdk-core" "0.0.3"
     "@pollum-io/swap-router-contracts" "0.0.5"
-    "@pollum-io/v1-sdk" "0.0.10"
+    "@pollum-io/v1-sdk" "0.0.11"
     "@pollum-io/v3-sdk" "0.0.2"
 
 "@pollum-io/sdk-core@0.0.3":
@@ -1835,19 +1835,20 @@
     dotenv "^14.2.0"
     hardhat-watcher "^2.1.1"
 
-"@pollum-io/universal-router@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@pollum-io/universal-router/-/universal-router-0.0.6.tgz#8bf76116edaaf5f0b140279ca1d4b88fd9d74e13"
-  integrity sha512-+XTHZymq7ckV8R49s+KghFasdmPIulW+5KQWIElRdg73//UQ3o2znFk2LF5JMn5/pZpHSNtTzCZwqqxmJeL8Sw==
+"@pollum-io/universal-router@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@pollum-io/universal-router/-/universal-router-0.0.8.tgz#3af869c5f2081f73b4f770a095b2d85326744334"
+  integrity sha512-c4GD0hQHEkFNRdwsOjDciI+Sq11pYbyDL+SyDadDC14iXugXutUIQxSdGC0pVbz8IrQaU1oqtQf1QUKaWnwg8g==
   dependencies:
     "@openzeppelin/contracts" "4.7.0"
     "@pollum-io/pegasys-protocol" "0.0.17"
     "@pollum-io/v3-core" "0.0.1"
+    solmate "^6.8.0"
 
-"@pollum-io/v1-sdk@0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@pollum-io/v1-sdk/-/v1-sdk-0.0.10.tgz#5cf9f9fcf318f9b749204634456471af14149215"
-  integrity sha512-yQ0aa9vkL7cM7+yjGHCsKYdIbK/wqLVz50tSXA7wUsrPuxgW0ITyS81AcBiVwSh7v/0eG4ksEzsF5e+UorYpZw==
+"@pollum-io/v1-sdk@0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@pollum-io/v1-sdk/-/v1-sdk-0.0.11.tgz#5810b7f86ce6eccd91cbcddab57e1ce20ff88ed6"
+  integrity sha512-Z8Org8V6EOAkUeY6/1im52D6k7dIpPxHE2+pUfrelw0eZvT3pZEiYaTtmk0C6CQ43p/SsPClt0DXpKFiETyvbw==
   dependencies:
     "@ethersproject/address" "^5.0.0"
     "@ethersproject/solidity" "^5.0.0"
@@ -8467,6 +8468,11 @@ solc@0.7.3:
     require-from-string "^2.0.0"
     semver "^5.5.0"
     tmp "0.0.33"
+
+solmate@^6.8.0:
+  version "6.8.0"
+  resolved "https://registry.yarnpkg.com/solmate/-/solmate-6.8.0.tgz#acb665d88783745899e2f6345e3ac66d5b7df2ab"
+  integrity sha512-/oI8kgEvSxGG1mrFv3FmCEZd0F8Z9VzRmoYMIhzmmzt6mjtPwfdCm3oh8yOL7bMHJBSfXJuMpnMPrM0uyaKsKg==
 
 source-map-resolve@^0.5.0:
   version "0.5.3"
