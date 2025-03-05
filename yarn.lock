@@ -1800,21 +1800,21 @@
   dependencies:
     web3 "^1.7.3"
 
-"@pollum-io/router-sdk@0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@pollum-io/router-sdk/-/router-sdk-0.0.7.tgz#12b61dbaf1e0e20889201d09c7a52c646fb3a870"
-  integrity sha512-c81VcsZJZ/vvTYnCM6SDCQBK6LV3yr0T8mKXoN8Z95xBow/xQOgppf04iwofKcKMS1NVP0ZqaXUW9ut30Xvn4Q==
+"@pollum-io/router-sdk@0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@pollum-io/router-sdk/-/router-sdk-0.0.8.tgz#2821f81117a4ec1692955895e18ed626ac116a9e"
+  integrity sha512-XdCD5dt13fHUAjo3oIfN6dwhj5vjCI9pJo1JYu6+aZhc4nieq2smBI1WpZ8KaSexws0/peOPlYatpLLP6PiAnQ==
   dependencies:
     "@ethersproject/abi" "^5.5.0"
-    "@pollum-io/sdk-core" "0.0.3"
+    "@pollum-io/sdk-core" "0.0.4"
     "@pollum-io/swap-router-contracts" "0.0.5"
-    "@pollum-io/v1-sdk" "0.0.11"
-    "@pollum-io/v3-sdk" "0.0.2"
+    "@pollum-io/v1-sdk" "0.0.12"
+    "@pollum-io/v3-sdk" "0.0.3"
 
-"@pollum-io/sdk-core@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@pollum-io/sdk-core/-/sdk-core-0.0.3.tgz#407e2b958ad56da3244c6022552025e37ae3f631"
-  integrity sha512-kL6eIpvcMyR2eRXliAYoKE9f1u5vfU+IwQeESaMcKdRB5KKZ8J+hmC7BSEsU/wvcMKHJ5AQSBWAElvzy2J/8Ig==
+"@pollum-io/sdk-core@0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@pollum-io/sdk-core/-/sdk-core-0.0.4.tgz#c448d58b53bd2b274c38d903a932d62400680b1d"
+  integrity sha512-Lf6FYnXYzafJOuLASLn8D/cEccJRePxhP0E98VvjaKWMi/4AmoFz25+86T7255kLvZQm+PgOcbEbeQ/o13vmwQ==
   dependencies:
     "@ethersproject/address" "^5.0.2"
     big.js "^5.2.2"
@@ -1845,14 +1845,14 @@
     "@pollum-io/v3-core" "0.0.1"
     solmate "^6.8.0"
 
-"@pollum-io/v1-sdk@0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@pollum-io/v1-sdk/-/v1-sdk-0.0.11.tgz#5810b7f86ce6eccd91cbcddab57e1ce20ff88ed6"
-  integrity sha512-Z8Org8V6EOAkUeY6/1im52D6k7dIpPxHE2+pUfrelw0eZvT3pZEiYaTtmk0C6CQ43p/SsPClt0DXpKFiETyvbw==
+"@pollum-io/v1-sdk@0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@pollum-io/v1-sdk/-/v1-sdk-0.0.12.tgz#35db756c7c654316079f4c7df53d2866a0d0fe6d"
+  integrity sha512-mB1IIi5vZ9AZ0xEb5XlfmttAA9g5ibUuGe+nNETcJLMuCmABZmIpHKPOUcG9UNhovDaoch7/jkMlCDrXfb3imA==
   dependencies:
     "@ethersproject/address" "^5.0.0"
     "@ethersproject/solidity" "^5.0.0"
-    "@pollum-io/sdk-core" "0.0.3"
+    "@pollum-io/sdk-core" "0.0.4"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
 
@@ -1874,14 +1874,14 @@
     "@uniswap/lib" "^4.0.1-alpha"
     base64-sol "1.0.1"
 
-"@pollum-io/v3-sdk@0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@pollum-io/v3-sdk/-/v3-sdk-0.0.2.tgz#1c2acded9de3471561fd4a6ff0e644198871cf68"
-  integrity sha512-4Skgxd8aJKaUAnk9jo1leiARkOMGQu1PvpyJBhC6tCM52zT9t7/wO+6tlxv4zLHmvXAi0qeraGjJ85WMJC+HuA==
+"@pollum-io/v3-sdk@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@pollum-io/v3-sdk/-/v3-sdk-0.0.3.tgz#9be99e17b4bb4e66ea601104c0a3fc1610169b04"
+  integrity sha512-d2Zd6/F+vt/vTL/0LKIQHF8VJWgtqMPiCngoAJuazRtsO/DWR0HwAdpc6OMskQ88Wmu5YrfnEogf5n6ex72N3w==
   dependencies:
     "@ethersproject/abi" "^5.0.12"
     "@ethersproject/solidity" "^5.0.9"
-    "@pollum-io/sdk-core" "0.0.3"
+    "@pollum-io/sdk-core" "0.0.4"
     "@pollum-io/swap-router-contracts" "0.0.5"
     "@pollum-io/v3-periphery" "0.0.1"
     "@pollum-io/v3-staker" "0.0.1"
