@@ -1800,16 +1800,16 @@
   dependencies:
     web3 "^1.7.3"
 
-"@pollum-io/router-sdk@0.0.9":
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/@pollum-io/router-sdk/-/router-sdk-0.0.9.tgz#a23debe2fccf07d9e9098ef7461cdb6735e5ab44"
-  integrity sha512-SmOBa++Sym3zy1Osm7WDUgiRuz6KPDh89T+bVNpTdxNaA7wi9HtL+B9mNsG1ZK1LkUTqOAq2cAG0NFUVNuMQ+w==
+"@pollum-io/router-sdk@0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@pollum-io/router-sdk/-/router-sdk-0.0.10.tgz#df1e00ac1439fd8a7a3f78de85206411cb974cc4"
+  integrity sha512-Tv6ZkP+BnSrj4669HIeHIDD6DgclC1BkQKiAfsa/yjQDQ0En4RfPgXWMTVTOg7Bi0n93K2aDl5hHPEcAp1+m1A==
   dependencies:
     "@ethersproject/abi" "^5.5.0"
     "@pollum-io/sdk-core" "0.0.4"
     "@pollum-io/swap-router-contracts" "0.0.5"
-    "@pollum-io/v1-sdk" "0.0.12"
-    "@pollum-io/v3-sdk" "0.0.4"
+    "@pollum-io/v1-sdk" "0.0.13"
+    "@pollum-io/v3-sdk" "0.0.5"
 
 "@pollum-io/sdk-core@0.0.4":
   version "0.0.4"
@@ -1845,16 +1845,17 @@
     "@pollum-io/v3-core" "0.0.1"
     solmate "^6.8.0"
 
-"@pollum-io/v1-sdk@0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@pollum-io/v1-sdk/-/v1-sdk-0.0.12.tgz#35db756c7c654316079f4c7df53d2866a0d0fe6d"
-  integrity sha512-mB1IIi5vZ9AZ0xEb5XlfmttAA9g5ibUuGe+nNETcJLMuCmABZmIpHKPOUcG9UNhovDaoch7/jkMlCDrXfb3imA==
+"@pollum-io/v1-sdk@0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@pollum-io/v1-sdk/-/v1-sdk-0.0.13.tgz#3fb0b21a6282db2036b6e8eadc6bf55af978befc"
+  integrity sha512-22n4oG6hATXbOVfaEg0K7ZS1ZM41fpxbMbwzJwT+7K22Yyf3mIg/4kn+/icbxk60aaEGWrC81jwGIuKSGHWFQA==
   dependencies:
     "@ethersproject/address" "^5.0.0"
     "@ethersproject/solidity" "^5.0.0"
     "@pollum-io/sdk-core" "0.0.4"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
+    zksync-web3 "^0.17.1"
 
 "@pollum-io/v3-core@0.0.1":
   version "0.0.1"
@@ -1874,10 +1875,10 @@
     "@uniswap/lib" "^4.0.1-alpha"
     base64-sol "1.0.1"
 
-"@pollum-io/v3-sdk@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@pollum-io/v3-sdk/-/v3-sdk-0.0.4.tgz#f757bf801ad63c3a792346882772aeed370c6351"
-  integrity sha512-6sD5QTQ7WvcOnnn8hcieFkKW96T7ZWwOp+5dKOhvLvQDqPhq727h+pZuWOmgHH3bvvAGOo9HwWvwavqImNi0Vw==
+"@pollum-io/v3-sdk@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@pollum-io/v3-sdk/-/v3-sdk-0.0.5.tgz#7e047372cbb37573e7dee87f7c8094645fc9400a"
+  integrity sha512-MtwPNMD85xvz31GVQxWYn+c9qJJ1gzECmFqxKrUnrgSS9yCEMeF/9j33dc4orwUtVLrt9yznX18zXZrbky7zDQ==
   dependencies:
     "@ethersproject/abi" "^5.0.12"
     "@ethersproject/solidity" "^5.0.9"
@@ -1887,6 +1888,7 @@
     "@pollum-io/v3-staker" "0.0.1"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
+    zksync-web3 "^0.17.1"
 
 "@pollum-io/v3-staker@0.0.1":
   version "0.0.1"
@@ -4422,7 +4424,7 @@ ethereumjs-util@^7.1.0, ethereumjs-util@^7.1.1, ethereumjs-util@^7.1.2, ethereum
     ethereum-cryptography "^0.1.3"
     rlp "^2.2.4"
 
-ethers@^5.3.1:
+ethers@^5.3.1, ethers@~5.7.0:
   version "5.7.2"
   resolved "https://registry.npmjs.org/ethers/-/ethers-5.7.2.tgz"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -10020,3 +10022,10 @@ yocto-queue@^0.1.0:
   version "0.1.0"
   resolved "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
+
+zksync-web3@^0.17.1:
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.17.1.tgz#809c3b31295c29aae924ec2fe47f87701b539012"
+  integrity sha512-jMV4gfAQyehkIbNs81i4uvccHLe+XBu/tNPFb0Rm38pXccWY5VXzVE6XWS0dBiHlMfjdfUGn/sxwzJbWZDGYGQ==
+  dependencies:
+    ethers "~5.7.0"
