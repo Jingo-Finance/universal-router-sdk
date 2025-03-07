@@ -7,7 +7,7 @@ export const UNIVERSAL_ROUTER_ADDRESS = (chainId: number): string => {
     case 57000: // rollux testnet
       return '0x85919312dB290fCcFe9D85d11CEA94DD97b0a1a7'
     case 5701: // zksys testnet
-      return '0x2e3bb499eC884c7BE58C0F068C91BE2EEff16F8A'
+      return '0xd96FDe92D76222869e668223Cc60d4469EcaB8B1'
     default:
       throw new Error(`Universal Router not deployed on chain ${chainId}`)
   }
@@ -26,7 +26,7 @@ export const WETH_ADDRESS = (chainId: number): string => {
 }
 
 export const PERMIT2_ADDRESS = '0x000000000022D473030F116dDEE9F6B43aC78BA3'
-export const PERMIT2_ADDRESS_ZKSYS = '0x0000000000000000000000000000000000008001'
+export const PERMIT2_ADDRESS_ZKSYS = '0xD729b859B2546F0A17604db18CE380292B3B49a4'
 
 export const CONTRACT_BALANCE = BigNumber.from(2).pow(255)
 export const ETH_ADDRESS = '0x0000000000000000000000000000000000000000'
