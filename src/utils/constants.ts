@@ -7,7 +7,7 @@ export const UNIVERSAL_ROUTER_ADDRESS = (chainId: number): string => {
     case 57000: // rollux testnet
       return '0x85919312dB290fCcFe9D85d11CEA94DD97b0a1a7'
     case 5701: // zksys testnet
-      return '0x963ddB2bA401088b194a93D8b6203cb5cB2c5456'
+      return '0x2e3bb499eC884c7BE58C0F068C91BE2EEff16F8A'
     default:
       throw new Error(`Universal Router not deployed on chain ${chainId}`)
   }
