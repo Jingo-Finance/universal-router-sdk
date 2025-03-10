@@ -1,6 +1,6 @@
 {
   "name": "@pollum-io/universal-router-sdk",
-  "version": "0.0.20",
+  "version": "0.0.22",
   "description": "sdk for integrating with the Universal Router contracts",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
