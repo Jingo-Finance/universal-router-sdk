@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, Ether } from '@jingofi-io/sdk-core'
+import { Currency, CurrencyAmount, Ether } from '@jingofi/sdk-core'
 
 export function getNativeCurrencyValue(currencyValues: CurrencyAmount<Currency>[]): CurrencyAmount<Currency> {
   for (const value of currencyValues) {

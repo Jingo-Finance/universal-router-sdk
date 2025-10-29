@@ -1,7 +1,7 @@
 import JSBI from 'jsbi'
 import { ethers } from 'ethers'
-import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@jingofi-io/router-sdk'
-import { Trade as V1Trade, Pair, Route as RouteV1, computePairAddress } from '@jingofi-io/v1-sdk'
+import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@jingofi/router-sdk'
+import { Trade as V1Trade, Pair, Route as RouteV1, computePairAddress } from '@jingofi/v1-sdk'
 import {
   Trade as V3Trade,
   Pool,
@@ -10,10 +10,10 @@ import {
   TickMath,
   TICK_SPACINGS,
   FeeAmount,
-} from '@jingofi-io/v3-sdk'
+} from '@jingofi/v3-sdk'
 import { SwapOptions } from '../../src'
-import { CurrencyAmount, TradeType, Ether, Token, Percent, Currency } from '@jingofi-io/sdk-core'
-import IUniswapV3Pool from '@jingofi-io/v3-core/artifacts/contracts/JingoV3Pool.sol/JingoV3Pool.json'
+import { CurrencyAmount, TradeType, Ether, Token, Percent, Currency } from '@jingofi/sdk-core'
+import IUniswapV3Pool from '@jingofi/v3-core/artifacts/contracts/JingoV3Pool.sol/JingoV3Pool.json'
 import { TEST_RECIPIENT_ADDRESS } from './addresses'
 
 const V1_FACTORY = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'

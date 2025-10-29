@@ -1793,27 +1793,27 @@
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.7.0.tgz#3092d70ea60e3d1835466266b1d68ad47035a2d5"
   integrity sha512-52Qb+A1DdOss8QvJrijYYPSf32GUg2pGaG/yCxtaA3cu4jduouTdg4XZSMLW9op54m1jH7J8hoajhHKOPsoJFw==
 
-"@jingofi-io/jingo-protocol@0.0.17":
+"@jingofi/jingo-protocol@0.0.17":
   version "0.0.17"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/jingo-protocol/-/jingo-protocol-0.0.17.tgz#742d6ff49e7e5e7b4c68cb300c52d521f4980f70"
+  resolved "https://registry.yarnpkg.com/@jingofi/jingo-protocol/-/jingo-protocol-0.0.17.tgz#742d6ff49e7e5e7b4c68cb300c52d521f4980f70"
   integrity sha512-JxSe2i5b4gkCdNVvtFpQjIhQbyNKLL55umppYXhfa8xAsQN9sXsiWYI2GQ/L9WXJ+yhEZ0xOESkvYkVn/flsPw==
   dependencies:
     web3 "^1.7.3"
 
-"@jingofi-io/router-sdk@0.0.6":
+"@jingofi/router-sdk@0.0.6":
   version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/router-sdk/-/router-sdk-0.0.6.tgz#a9f9b5d0a2e8bf2b389e24aec4e73c91bc66bf97"
+  resolved "https://registry.yarnpkg.com/@jingofi/router-sdk/-/router-sdk-0.0.6.tgz#a9f9b5d0a2e8bf2b389e24aec4e73c91bc66bf97"
   integrity sha512-GCLSiQO130ll0ZVv+4lRW5Ncgujc5+fKy+vajm3QXRLtQuftMUGhjrDM67bKHluJmSpd3C3IwdhSQFnYnTs7aA==
   dependencies:
     "@ethersproject/abi" "^5.5.0"
-    "@jingofi-io/sdk-core" "0.0.3"
-    "@jingofi-io/swap-router-contracts" "0.0.5"
-    "@jingofi-io/v1-sdk" "0.0.10"
-    "@jingofi-io/v3-sdk" "0.0.2"
+    "@jingofi/sdk-core" "0.0.3"
+    "@jingofi/swap-router-contracts" "0.0.5"
+    "@jingofi/v1-sdk" "0.0.10"
+    "@jingofi/v3-sdk" "0.0.2"
 
-"@jingofi-io/sdk-core@0.0.3":
+"@jingofi/sdk-core@0.0.3":
   version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/sdk-core/-/sdk-core-0.0.3.tgz#407e2b958ad56da3244c6022552025e37ae3f631"
+  resolved "https://registry.yarnpkg.com/@jingofi/sdk-core/-/sdk-core-0.0.3.tgz#407e2b958ad56da3244c6022552025e37ae3f631"
   integrity sha512-kL6eIpvcMyR2eRXliAYoKE9f1u5vfU+IwQeESaMcKdRB5KKZ8J+hmC7BSEsU/wvcMKHJ5AQSBWAElvzy2J/8Ig==
   dependencies:
     "@ethersproject/address" "^5.0.2"
@@ -1823,78 +1823,78 @@
     tiny-invariant "^1.1.0"
     toformat "^2.0.0"
 
-"@jingofi-io/swap-router-contracts@0.0.5":
+"@jingofi/swap-router-contracts@0.0.5":
   version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/swap-router-contracts/-/swap-router-contracts-0.0.5.tgz#5827f8c2075ca12ca7ca89d10faf814ec9894306"
+  resolved "https://registry.yarnpkg.com/@jingofi/swap-router-contracts/-/swap-router-contracts-0.0.5.tgz#5827f8c2075ca12ca7ca89d10faf814ec9894306"
   integrity sha512-cyh58Ud+qSQNRDWuwjkq0yUpDXClqq6SQTG4Vp/3OQgTwTVxAqAL0qD73JzMc6YyY7p4hTBj7Uws+7Mh/kD7lg==
   dependencies:
     "@openzeppelin/contracts" "3.4.2-solc-0.7"
-    "@jingofi-io/jingo-protocol" "0.0.17"
-    "@jingofi-io/v3-core" "0.0.1"
-    "@jingofi-io/v3-periphery" "0.0.1"
+    "@jingofi/jingo-protocol" "0.0.17"
+    "@jingofi/v3-core" "0.0.1"
+    "@jingofi/v3-periphery" "0.0.1"
     dotenv "^14.2.0"
     hardhat-watcher "^2.1.1"
 
-"@jingofi-io/universal-router@0.0.6":
+"@jingofi/universal-router@0.0.6":
   version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/universal-router/-/universal-router-0.0.6.tgz#8bf76116edaaf5f0b140279ca1d4b88fd9d74e13"
+  resolved "https://registry.yarnpkg.com/@jingofi/universal-router/-/universal-router-0.0.6.tgz#8bf76116edaaf5f0b140279ca1d4b88fd9d74e13"
   integrity sha512-+XTHZymq7ckV8R49s+KghFasdmPIulW+5KQWIElRdg73//UQ3o2znFk2LF5JMn5/pZpHSNtTzCZwqqxmJeL8Sw==
   dependencies:
     "@openzeppelin/contracts" "4.7.0"
-    "@jingofi-io/jingo-protocol" "0.0.17"
-    "@jingofi-io/v3-core" "0.0.1"
+    "@jingofi/jingo-protocol" "0.0.17"
+    "@jingofi/v3-core" "0.0.1"
 
-"@jingofi-io/v1-sdk@0.0.10":
+"@jingofi/v1-sdk@0.0.10":
   version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/v1-sdk/-/v1-sdk-0.0.10.tgz#5cf9f9fcf318f9b749204634456471af14149215"
+  resolved "https://registry.yarnpkg.com/@jingofi/v1-sdk/-/v1-sdk-0.0.10.tgz#5cf9f9fcf318f9b749204634456471af14149215"
   integrity sha512-yQ0aa9vkL7cM7+yjGHCsKYdIbK/wqLVz50tSXA7wUsrPuxgW0ITyS81AcBiVwSh7v/0eG4ksEzsF5e+UorYpZw==
   dependencies:
     "@ethersproject/address" "^5.0.0"
     "@ethersproject/solidity" "^5.0.0"
-    "@jingofi-io/sdk-core" "0.0.3"
+    "@jingofi/sdk-core" "0.0.3"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
 
-"@jingofi-io/v3-core@0.0.1":
+"@jingofi/v3-core@0.0.1":
   version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/v3-core/-/v3-core-0.0.1.tgz#7206e32b6bfbb5e21098eab29d45643944e59d53"
+  resolved "https://registry.yarnpkg.com/@jingofi/v3-core/-/v3-core-0.0.1.tgz#7206e32b6bfbb5e21098eab29d45643944e59d53"
   integrity sha512-l4VnKlKOokoIAzQdpoyHQWmWhfsl0qU5pAlNlsMI0G1ebCBv5sbapZfUr4vs4hiHO1ZxQBPfKQiC654GJC+C2w==
   dependencies:
     dotenv "^16.0.3"
 
-"@jingofi-io/v3-periphery@0.0.1":
+"@jingofi/v3-periphery@0.0.1":
   version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/v3-periphery/-/v3-periphery-0.0.1.tgz#cb90ac69cd0f958e810c6970e4e3877c85037f8f"
+  resolved "https://registry.yarnpkg.com/@jingofi/v3-periphery/-/v3-periphery-0.0.1.tgz#cb90ac69cd0f958e810c6970e4e3877c85037f8f"
   integrity sha512-XjxfhNy8C+v6lgSxzQFaKX2x59zRTVbU2EyUK3IkgcMTDrWRqwHI5eaxn/kVaNzNngA+lYV0y9ofuNIl37VrTg==
   dependencies:
     "@openzeppelin/contracts" "3.4.2-solc-0.7"
-    "@jingofi-io/jingo-protocol" "0.0.17"
-    "@jingofi-io/v3-core" "0.0.1"
+    "@jingofi/jingo-protocol" "0.0.17"
+    "@jingofi/v3-core" "0.0.1"
     "@uniswap/lib" "^4.0.1-alpha"
     base64-sol "1.0.1"
 
-"@jingofi-io/v3-sdk@0.0.2":
+"@jingofi/v3-sdk@0.0.2":
   version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/v3-sdk/-/v3-sdk-0.0.2.tgz#1c2acded9de3471561fd4a6ff0e644198871cf68"
+  resolved "https://registry.yarnpkg.com/@jingofi/v3-sdk/-/v3-sdk-0.0.2.tgz#1c2acded9de3471561fd4a6ff0e644198871cf68"
   integrity sha512-4Skgxd8aJKaUAnk9jo1leiARkOMGQu1PvpyJBhC6tCM52zT9t7/wO+6tlxv4zLHmvXAi0qeraGjJ85WMJC+HuA==
   dependencies:
     "@ethersproject/abi" "^5.0.12"
     "@ethersproject/solidity" "^5.0.9"
-    "@jingofi-io/sdk-core" "0.0.3"
-    "@jingofi-io/swap-router-contracts" "0.0.5"
-    "@jingofi-io/v3-periphery" "0.0.1"
-    "@jingofi-io/v3-staker" "0.0.1"
+    "@jingofi/sdk-core" "0.0.3"
+    "@jingofi/swap-router-contracts" "0.0.5"
+    "@jingofi/v3-periphery" "0.0.1"
+    "@jingofi/v3-staker" "0.0.1"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
 
-"@jingofi-io/v3-staker@0.0.1":
+"@jingofi/v3-staker@0.0.1":
   version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@jingofi-io/v3-staker/-/v3-staker-0.0.1.tgz#f7b075538522b68bd134ffd444e4238f57475427"
+  resolved "https://registry.yarnpkg.com/@jingofi/v3-staker/-/v3-staker-0.0.1.tgz#f7b075538522b68bd134ffd444e4238f57475427"
   integrity sha512-Km4Yp6SYfsGvklHY9Z7lOqYJ/ZJ7GO+3aD5ZelaMKVi+xobx9rgheOCDeDFJfNZsL01ktxGAkKWlC19tjusBkA==
   dependencies:
     "@openzeppelin/contracts" "3.4.1-solc-0.7-2"
-    "@jingofi-io/v3-core" "0.0.1"
-    "@jingofi-io/v3-periphery" "0.0.1"
+    "@jingofi/v3-core" "0.0.1"
+    "@jingofi/v3-periphery" "0.0.1"
 
 "@rollup/plugin-babel@^5.1.0":
   version "5.3.1"

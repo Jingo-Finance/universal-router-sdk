@@ -1,7 +1,7 @@
 import JSBI from 'jsbi'
 import { RoutePlanner, CommandType } from '../../utils/routerCommands'
-import { Trade as V1Trade, Pair } from '@jingofi-io/v1-sdk'
-import { Trade as V3Trade, Pool, encodeRouteToPath } from '@jingofi-io/v3-sdk'
+import { Trade as V1Trade, Pair } from '@jingofi/v1-sdk'
+import { Trade as V3Trade, Pool, encodeRouteToPath } from '@jingofi/v3-sdk'
 import {
   Trade as RouterTrade,
   MixedRouteTrade,
@@ -15,9 +15,9 @@ import {
   getOutputOfPools,
   encodeMixedRouteToPath,
   partitionMixedRouteByProtocol,
-} from '@jingofi-io/router-sdk'
+} from '@jingofi/router-sdk'
 import { Permit2Permit } from '../../utils/inputTokens'
-import { Currency, TradeType, CurrencyAmount, Percent } from '@jingofi-io/sdk-core'
+import { Currency, TradeType, CurrencyAmount, Percent } from '@jingofi/sdk-core'
 import { Command, RouterTradeType, TradeConfig } from '../Command'
 import { SENDER_AS_RECIPIENT, ROUTER_AS_RECIPIENT, CONTRACT_BALANCE } from '../../utils/constants'
 
