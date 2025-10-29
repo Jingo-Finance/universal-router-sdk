@@ -2,14 +2,14 @@ import { expect } from 'chai'
 import JSBI from 'jsbi'
 import { BigNumber, utils, Wallet } from 'ethers'
 import { expandTo18Decimals } from '../src/utils/expandTo18Decimals'
-import { SwapRouter, PegasysTrade } from '../src'
-import { MixedRouteTrade, MixedRouteSDK } from '@pollum-io/router-sdk'
-import { Trade as V1Trade, Pair, Route as RouteV1 } from '@pollum-io/v1-sdk'
-import { Trade as V3Trade, Route as RouteV3, Pool } from '@pollum-io/v3-sdk'
+import { SwapRouter,JingoTrade } from '../src'
+import { MixedRouteTrade, MixedRouteSDK } from '@jingofi-io/router-sdk'
+import { Trade as V1Trade, Pair, Route as RouteV1 } from '@jingofi-io/v1-sdk'
+import { Trade as V3Trade, Route as RouteV3, Pool } from '@jingofi-io/v3-sdk'
 import { generatePermitSignature, toInputPermit, makePermit, generateEip2098PermitSignature } from './utils/permit2'
-import { CurrencyAmount, TradeType } from '@pollum-io/sdk-core'
+import { CurrencyAmount, TradeType } from '@jingofi-io/sdk-core'
 import { registerFixture } from './forge/writeInterop'
-import { buildTrade, getPegasysPools, swapOptions, ETHER, DAI, USDC } from './utils/pegasysData'
+import { buildTrade, getJingoPools, swapOptions, ETHER, DAI, USDC } from './utils/jingoData'
 import { hexToDecimalString } from './utils/hexToDecimalString'
 import { FORGE_PERMIT2_ADDRESS, FORGE_ROUTER_ADDRESS } from './utils/addresses'
 
@@ -17,7 +17,7 @@ const FORK_BLOCK = 16075500
 
 // note: these tests aren't testing much but registering calldata to interop file
 // for use in forge fork tests
-describe('Pegasys', () => {
+describe('Jingo', () => {
   const wallet = new Wallet(utils.zeroPad('0x1234', 32))
   let WETH_USDC_V1: Pair
   let USDC_DAI_V1: Pair
@@ -26,7 +26,7 @@ describe('Pegasys', () => {
   let USDC_DAI_V3: Pool
 
   before(async () => {
-    ; ({ WETH_USDC_V1, USDC_DAI_V1, WETH_USDC_V3, USDC_DAI_V3, WETH_USDC_V3_LOW_FEE } = await getPegasysPools(
+    ; ({ WETH_USDC_V1, USDC_DAI_V1, WETH_USDC_V3, USDC_DAI_V3, WETH_USDC_V3_LOW_FEE } = await getJingoPools(
       FORK_BLOCK
     ))
   })
@@ -41,7 +41,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1_ETH_FOR_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -57,7 +57,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1_ETH_FOR_USDC_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -73,7 +73,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1000_USDC_FOR_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -91,7 +91,7 @@ describe('Pegasys', () => {
       const signature = await generatePermitSignature(permit, wallet, trade.route.chainId, FORGE_PERMIT2_ADDRESS)
       const opts = swapOptions({ inputTokenPermit: toInputPermit(signature, permit) })
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1000_USDC_FOR_ETH_PERMIT', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -109,7 +109,7 @@ describe('Pegasys', () => {
       const signature = await generateEip2098PermitSignature(permit, wallet, trade.route.chainId)
       const opts = swapOptions({ inputTokenPermit: toInputPermit(signature, permit) })
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1000_USDC_FOR_ETH_2098_PERMIT', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -139,7 +139,7 @@ describe('Pegasys', () => {
       expect(utils.joinSignature(utils.splitSignature(signature))).to.eq(originalSignature)
       const opts = swapOptions({ inputTokenPermit: toInputPermit(signature, permit) })
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_1000_USDC_FOR_ETH_PERMIT_V_RECOVERY_PARAM', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -155,7 +155,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_10_DAI_FOR_ETH_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -171,7 +171,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_ETH_FOR_1000_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.not.equal('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -187,7 +187,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V2_USDC_FOR_1_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -205,7 +205,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_1_ETH_FOR_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -221,7 +221,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_1000_USDC_FOR_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -244,7 +244,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({ inputTokenPermit: toInputPermit(signature, permit) })
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_1000_USDC_FOR_ETH_PERMIT', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -260,7 +260,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_1_ETH_FOR_DAI_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -276,7 +276,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_ETH_FOR_1000_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.not.equal('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -292,7 +292,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_USDC_FOR_1_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -308,7 +308,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_ETH_FOR_1000_DAI_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.not.equal('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -324,7 +324,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_V3_DAI_FOR_1_ETH_2_HOP', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.equal('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -342,7 +342,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_1_ETH_FOR_DAI', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -358,7 +358,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_1_ETH_FOR_DAI_V2_FIRST', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -374,7 +374,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_1_ETH_FOR_DAI_V2_ONLY', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -390,7 +390,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_1_ETH_FOR_DAI_V3_ONLY', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(inputEther)
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -406,7 +406,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([trade]), opts))
       registerFixture('_UNISWAP_MIXED_DAI_FOR_ETH', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq('0')
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -429,7 +429,7 @@ describe('Pegasys', () => {
       )
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([v2Trade, v3Trade]), opts)
-      const methodParametersV2 = SwapRouter.swapCallParameters(new PegasysTrade(buildTrade([v2Trade, v3Trade]), opts))
+      const methodParametersV2 = SwapRouter.swapCallParameters(newJingoTrade(buildTrade([v2Trade, v3Trade]), opts))
       registerFixture('_UNISWAP_SPLIT_TWO_ROUTES_ETH_TO_USDC', methodParameters)
       expect(hexToDecimalString(methodParameters.value)).to.eq(JSBI.multiply(inputEther, JSBI.BigInt(2)).toString())
       expect(methodParameters.calldata).to.eq(methodParametersV2.calldata)
@@ -457,7 +457,7 @@ describe('Pegasys', () => {
       const opts = swapOptions({})
       const methodParameters = SwapRouter.swapERC20CallParameters(buildTrade([v2Trade, v3Trade1, v3Trade2]), opts)
       const methodParametersV2 = SwapRouter.swapCallParameters([
-        new PegasysTrade(buildTrade([v2Trade, v3Trade1, v3Trade2]), opts),
+        newJingoTrade(buildTrade([v2Trade, v3Trade1, v3Trade2]), opts),
       ])
       registerFixture('_UNISWAP_SPLIT_TWO_ROUTES_ETH_TO_USDC', methodParameters)
       registerFixture('_UNISWAP_SPLIT_THREE_ROUTES_ETH_TO_USDC', methodParameters)

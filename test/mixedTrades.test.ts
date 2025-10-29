@@ -5,14 +5,14 @@ import { utils, Wallet } from 'ethers'
 import { LooksRareV2Data, LooksRareV2Trade } from '../src/entities/protocols/looksRareV2'
 import { looksRareV2Orders } from './orders/looksRareV2'
 import { seaportV1_4DataETHRecent } from './orders/seaportV1_4'
-import { Trade as V1Trade, Route as RouteV1, Pair } from '@pollum-io/v1-sdk'
-import { Trade as V3Trade, Route as RouteV3, Pool } from '@pollum-io/v3-sdk'
+import { Trade as V1Trade, Route as RouteV1, Pair } from '@jingofi-io/v1-sdk'
+import { Trade as V3Trade, Route as RouteV3, Pool } from '@jingofi-io/v3-sdk'
 import { generatePermitSignature, makePermit } from './utils/permit2'
 
-import { PegasysTrade } from '../src'
-import { CurrencyAmount, TradeType } from '@pollum-io/sdk-core'
+import {JingoTrade } from '../src'
+import { CurrencyAmount, TradeType } from '@jingofi-io/sdk-core'
 import { registerFixture } from './forge/writeInterop'
-import { buildTrade, getPegasysPools, swapOptions, DAI, ETHER, WETH, USDC } from './utils/pegasysData'
+import { buildTrade, getJingoPools, swapOptions, DAI, ETHER, WETH, USDC } from './utils/jingoData'
 import {
   FORGE_PERMIT2_ADDRESS,
   FORGE_ROUTER_ADDRESS,
@@ -47,7 +47,7 @@ describe('SwapRouter.swapCallParameters', () => {
     let WETH_USDC_V1: Pair
 
     beforeEach(async () => {
-      ; ({ WETH_USDC_V3, USDC_DAI_V1, WETH_USDC_V1 } = await getPegasysPools(15360000))
+      ; ({ WETH_USDC_V3, USDC_DAI_V1, WETH_USDC_V1 } = await getJingoPools(15360000))
     })
 
     it('erc20 -> 1 looksrare nft', async () => {
@@ -59,9 +59,9 @@ describe('SwapRouter.swapCallParameters', () => {
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const pegasysTrade = new PegasysTrade(erc20Trade, opts)
+      const jingoTrade = newJingoTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, looksRareV2Trade], {
+      const methodParameters = SwapRouter.swapCallParameters([jingoTrade, looksRareV2Trade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_FOR_1_LOOKSRARE_NFT', methodParameters)
@@ -105,9 +105,9 @@ describe('SwapRouter.swapCallParameters', () => {
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const pegasysTrade = new PegasysTrade(erc20Trade, opts)
+      const jingoTrade = newJingoTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, looksRareV2Trade], {
+      const methodParameters = SwapRouter.swapCallParameters([jingoTrade, looksRareV2Trade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_AND_ETH_FOR_1_LOOKSRARE_NFT', methodParameters)
@@ -125,9 +125,9 @@ describe('SwapRouter.swapCallParameters', () => {
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const pegasysTrade = new PegasysTrade(erc20Trade, opts)
+      const jingoTrade = newJingoTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, looksRareV2Trade, seaportTrade], {
+      const methodParameters = SwapRouter.swapCallParameters([jingoTrade, looksRareV2Trade, seaportTrade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_FOR_1_LOOKSRARE_NFT_1_SEAPORT_NFT', methodParameters)
@@ -143,9 +143,9 @@ describe('SwapRouter.swapCallParameters', () => {
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const pegasysTrade = new PegasysTrade(erc20Trade, opts)
+      const jingoTrade = newJingoTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, looksRareV2Trade, seaportTrade], {
+      const methodParameters = SwapRouter.swapCallParameters([jingoTrade, looksRareV2Trade, seaportTrade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_AND_ETH_FOR_1_LOOKSRARE_NFT_1_SEAPORT_NFT', methodParameters)
@@ -168,10 +168,10 @@ describe('SwapRouter.swapCallParameters', () => {
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const pegasysTrade1 = new PegasysTrade(erc20Trade1, opts)
-      const pegasysTrade2 = new PegasysTrade(erc20Trade2, opts)
+      const jingoTrade1 = newJingoTrade(erc20Trade1, opts)
+      const jingoTrade2 = newJingoTrade(erc20Trade2, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade1, pegasysTrade2, looksRareV2Trade], {
+      const methodParameters = SwapRouter.swapCallParameters([jingoTrade1, jingoTrade2, looksRareV2Trade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_2_ERC20s_FOR_1_NFT', methodParameters)
@@ -187,9 +187,9 @@ describe('SwapRouter.swapCallParameters', () => {
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const pegasysTrade = new PegasysTrade(erc20Trade, opts)
+      const jingoTrade = newJingoTrade(erc20Trade, opts)
 
-      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, invalidLooksRareV2Trade], {
+      const methodParameters = SwapRouter.swapCallParameters([jingoTrade, invalidLooksRareV2Trade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_FOR_1_INVALID_NFT', methodParameters)
@@ -207,10 +207,10 @@ describe('SwapRouter.swapCallParameters', () => {
         ),
       ])
       const opts = swapOptions({ recipient: ROUTER_AS_RECIPIENT })
-      const pegasysTrade = new PegasysTrade(erc20Trade, opts)
+      const jingoTrade = newJingoTrade(erc20Trade, opts)
 
       // invalid looks rare trade to make it a partial fill
-      const methodParameters = SwapRouter.swapCallParameters([pegasysTrade, invalidLooksRareV2Trade, seaportTrade], {
+      const methodParameters = SwapRouter.swapCallParameters([jingoTrade, invalidLooksRareV2Trade, seaportTrade], {
         sender: FORGE_SENDER_ADDRESS,
       })
       registerFixture('_ERC20_FOR_NFTS_PARTIAL_FILL', methodParameters)

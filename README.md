@@ -1,5 +1,5 @@
 # universal-router-sdk
-This SDK facilitates interactions with the contracts in [Universal Router](https://github.com/pegasys-fi/universal-router)
+This SDK facilitates interactions with the contracts in [Universal Router](https://github.com/jingo-fi/universal-router)
 
 ## Usage
 Install latest version of universal-router-sdk. Then import the corresponding Trade class and Data object for each protocol you'd like to interact with.
@@ -24,7 +24,7 @@ const seaportTrades = new SeaportTrade([seaportData1])
 const { calldata, value } = SwapRouter.swapCallParameters([looksRareTrades, seaportTrades])
 ```
 
-### Trading ERC20s on Pegasys
+### Trading ERC20s onJingo
 warning: `swapERC20CallParameters()` to be deprecated in favor of `swapCallParameters()`
 ```typescript
 import { TradeType } from '@uniswap/sdk-core'
@@ -33,7 +33,7 @@ import { Trade as V3TradeSDK } from '@uniswap/v3-sdk'
 import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@uniswap/router-sdk'
 
 const options = { slippageTolerance, recipient }
-const routerTrade = new PegasysTrade(
+const routerTrade = newJingoTrade(
   new RouterTrade({ v2Routes, v3Routes, mixedRoutes, tradeType: TradeType.EXACT_INPUT },
   options
 )
@@ -52,7 +52,7 @@ import { Trade as V3TradeSDK } from '@uniswap/v3-sdk'
 import { MixedRouteTrade, MixedRouteSDK, Trade as RouterTrade } from '@uniswap/router-sdk'
 import {
   ROUTER_AS_RECIPIENT,
-  PegasysTrade,
+ JingoTrade,
   LooksRareTrade,
   LooksRareData,
   SeaportTrade,
@@ -62,12 +62,12 @@ import {
 const looksRareTrades = new LooksRareTrade([looksrareData1, looksrareData2])
 const seaportTrades = new SeaportTrade([seaportData1])
 // WARNING: never send funds to ROUTER_AS_RECIPIENT unless it is ETH that will be used in NFT trades, otherwise funds are lost.
-const pegasysTrade = new PegasysTrade(
+const jingoTrade = newJingoTrade(
   new RouterTrade({ v2Routes, v3Routes, mixedRoutes, tradeType: TradeType.EXACT_OUTPUT }),
   { slippageTolerance, recipient:  ROUTER_AS_RECIPIENT}
 )
 // Use the raw calldata and value returned to call into Universal Swap Router contracts
-const { calldata, value } = SwapRouter.swapCallParameters([pegasysTrade, seaportTrades, looksRareTrades])
+const { calldata, value } = SwapRouter.swapCallParameters([jingoTrade, seaportTrades, looksRareTrades])
 ```
 
 ### Using WETH for NFT Trades
@@ -76,7 +76,7 @@ The current router purchases all NFTs with ETH, but you can send WETH to the rou
 ```typescript
 import {
   ROUTER_AS_RECIPIENT,
-  PegasysTrade,
+ JingoTrade,
   LooksRareTrade,
   LooksRareData,
   SeaportTrade,

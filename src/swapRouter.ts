@@ -1,13 +1,13 @@
 import invariant from 'tiny-invariant'
-import { abi } from '@pollum-io/universal-router/artifacts/contracts/UniversalRouter.sol/UniversalRouter.json'
+import { abi } from '@jingofi-io/universal-router/artifacts/contracts/UniversalRouter.sol/UniversalRouter.json'
 import { Interface } from '@ethersproject/abi'
 import { BigNumber, BigNumberish } from 'ethers'
-import { MethodParameters } from '@pollum-io/v3-sdk'
-import { Trade as RouterTrade } from '@pollum-io/router-sdk'
-import { Currency, TradeType } from '@pollum-io/sdk-core'
+import { MethodParameters } from '@jingofi-io/v3-sdk'
+import { Trade as RouterTrade } from '@jingofi-io/router-sdk'
+import { Currency, TradeType } from '@jingofi-io/sdk-core'
 import { Command, RouterTradeType } from './entities/Command'
 import { NFTTrade, SupportedProtocolsData } from './entities/NFTTrade'
-import { PegasysTrade, SwapOptions } from './entities/protocols/pegasys'
+import {JingoTrade, SwapOptions } from './entities/protocols/jingo'
 import { UnwrapWETH } from './entities/protocols/unwrapWETH'
 import { CommandType, RoutePlanner } from './utils/routerCommands'
 import { encodePermit } from './utils/inputTokens'
@@ -51,13 +51,13 @@ export abstract class SwapRouter {
           currentNativeValueInRouter = currentNativeValueInRouter.sub(tradePrice)
         }
         /**
-         * is PegasysTrade
+         * isJingoTrade
          */
-      } else if (trade.tradeType == RouterTradeType.PegasysTrade) {
-        const pegasysTrade = trade as PegasysTrade
-        const inputIsNative = pegasysTrade.trade.inputAmount.currency.isNative
-        const outputIsNative = pegasysTrade.trade.outputAmount.currency.isNative
-        const swapOptions = pegasysTrade.options
+      } else if (trade.tradeType == RouterTradeType.JingoTrade) {
+        const jingoTrade = trade asJingoTrade
+        const inputIsNative = jingoTrade.trade.inputAmount.currency.isNative
+        const outputIsNative = jingoTrade.trade.outputAmount.currency.isNative
+        const swapOptions = jingoTrade.options
 
         invariant(!(inputIsNative && !!swapOptions.inputTokenPermit), 'NATIVE_INPUT_PERMIT')
 
@@ -67,16 +67,16 @@ export abstract class SwapRouter {
 
         if (inputIsNative) {
           transactionValue = transactionValue.add(
-            BigNumber.from(pegasysTrade.trade.maximumAmountIn(swapOptions.slippageTolerance).quotient.toString())
+            BigNumber.from(jingoTrade.trade.maximumAmountIn(swapOptions.slippageTolerance).quotient.toString())
           )
         }
         // track amount of native currency in the router
         if (outputIsNative && swapOptions.recipient == ROUTER_AS_RECIPIENT) {
           currentNativeValueInRouter = currentNativeValueInRouter.add(
-            BigNumber.from(pegasysTrade.trade.minimumAmountOut(swapOptions.slippageTolerance).quotient.toString())
+            BigNumber.from(jingoTrade.trade.minimumAmountOut(swapOptions.slippageTolerance).quotient.toString())
           )
         }
-        pegasysTrade.encode(planner, { allowRevert: false })
+        jingoTrade.encode(planner, { allowRevert: false })
         /**
          * is UnwrapWETH
          */
@@ -88,7 +88,7 @@ export abstract class SwapRouter {
          * else
          */
       } else {
-        throw 'trade must be of instance: PegasysTrade or NFTTrade'
+        throw 'trade must be of instance:JingoTrade or NFTTrade'
       }
     }
 
@@ -132,7 +132,7 @@ export abstract class SwapRouter {
     // TODO: use permit if signature included in swapOptions
     const planner = new RoutePlanner()
 
-    const trade: PegasysTrade = new PegasysTrade(trades, options)
+    const trade:JingoTrade = newJingoTrade(trades, options)
 
     const inputCurrency = trade.trade.inputAmount.currency
     invariant(!(inputCurrency.isNative && !!options.inputTokenPermit), 'NATIVE_INPUT_PERMIT')

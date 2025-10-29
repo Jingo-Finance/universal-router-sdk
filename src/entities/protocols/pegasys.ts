@@ -1,7 +1,7 @@
 import JSBI from 'jsbi'
 import { RoutePlanner, CommandType } from '../../utils/routerCommands'
-import { Trade as V1Trade, Pair } from '@pollum-io/v1-sdk'
-import { Trade as V3Trade, Pool, encodeRouteToPath } from '@pollum-io/v3-sdk'
+import { Trade as V1Trade, Pair } from '@jingofi-io/v1-sdk'
+import { Trade as V3Trade, Pool, encodeRouteToPath } from '@jingofi-io/v3-sdk'
 import {
   Trade as RouterTrade,
   MixedRouteTrade,
@@ -15,9 +15,9 @@ import {
   getOutputOfPools,
   encodeMixedRouteToPath,
   partitionMixedRouteByProtocol,
-} from '@pollum-io/router-sdk'
+} from '@jingofi-io/router-sdk'
 import { Permit2Permit } from '../../utils/inputTokens'
-import { Currency, TradeType, CurrencyAmount, Percent } from '@pollum-io/sdk-core'
+import { Currency, TradeType, CurrencyAmount, Percent } from '@jingofi-io/sdk-core'
 import { Command, RouterTradeType, TradeConfig } from '../Command'
 import { SENDER_AS_RECIPIENT, ROUTER_AS_RECIPIENT, CONTRACT_BALANCE } from '../../utils/constants'
 
@@ -35,10 +35,10 @@ interface Swap<TInput extends Currency, TOutput extends Currency> {
   outputAmount: CurrencyAmount<TOutput>
 }
 
-// Wrapper for pegasys router-sdk trade entity to encode swaps for Universal Router
+// Wrapper for jingo router-sdk trade entity to encode swaps for Universal Router
 // also translates trade objects from previous (v2, v3) SDKs
-export class PegasysTrade implements Command {
-  readonly tradeType: RouterTradeType = RouterTradeType.PegasysTrade
+export classJingoTrade implements Command {
+  readonly tradeType: RouterTradeType = RouterTradeType.JingoTrade
   constructor(public trade: RouterTrade<Currency, Currency, TradeType>, public options: SwapOptions) { }
 
   encode(planner: RoutePlanner, _config: TradeConfig): void {
@@ -103,7 +103,7 @@ export class PegasysTrade implements Command {
   }
 }
 
-// encode a Pegasys v2 swap
+// encode aJingo v2 swap
 function addV1Swap<TInput extends Currency, TOutput extends Currency>(
   planner: RoutePlanner,
   { route, inputAmount, outputAmount }: Swap<TInput, TOutput>,
@@ -138,7 +138,7 @@ function addV1Swap<TInput extends Currency, TOutput extends Currency>(
   }
 }
 
-// encode a Pegasys v3 swap
+// encode aJingo v3 swap
 function addV3Swap<TInput extends Currency, TOutput extends Currency>(
   planner: RoutePlanner,
   { route, inputAmount, outputAmount }: Swap<TInput, TOutput>,
